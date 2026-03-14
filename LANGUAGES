@@ -1,0 +1,57 @@
+changes by gaylord.aulke@100days.de
+(13 Nov. 2004)
+
+Integrared gettext-support for I18n compliant
+multi language support.
+
+when gettext is not available, the english version
+is shown at runtime.
+
+see:
+http://www.php.net/manual/en/ref.gettext.php
+http://www.onlamp.com/pub/a/php/2002/06/13/php.html?page=1
+
+in inc/header.inc.php i added a constant specifying
+the language (locale) to be used. I also added a
+new file inc/gettext.inc.php that is included here.
+
+All constant Strings in the php scripts are now
+converted with the gettext function.
+
+In HTML-Mode this is done by adding:
+<?= gettext("myString")?>
+where myString should be put out.
+
+In PHP-parts of the script, just use
+gettext("myString") instead of "myString"
+
+After changing php-files:
+
+The batch file gettext_generate.bat will
+generate a new english version of the resource
+file message.po in the directory 
+locale/en/LC_MESSAGES
+
+It also merges the changes with the existing
+german translation in locale/en/LC_MESSAGES
+
+After that, the translation can be done in the
+language specific message.po
+
+After translation, gettext_compile.bat must be
+called to generate a binary version of the 
+resoruce file that will later be used.
+Only these files (messages.mo) are needed at runtime.
+
+To add more languages, just create more directories
+and copy/paste new lines in the two batch files 
+to automatically include them in the merge / compile
+process.
+
+please change the pathes to the gettext-binaries
+in the batch files before calling them.
+
+gettext is available on many platforms. you have to
+adopt the batch files to shell scripts to use them
+under *nix or linux. this should be very easy since
+the batch files are really simple.

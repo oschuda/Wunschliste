@@ -1,0 +1,694 @@
+/********************************************************
+ * phpWishlist � Modernisiertes CSS (2026)
+ * Basierend auf Original ~2004 ? stark aufger�umt & responsiv
+ ********************************************************/
+
+:root {
+    --primary-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-base: 0.875rem;       /* 14px */
+    --font-size-small: 0.75rem;       /* 12px */
+
+    /* Textfarben - Hoher Kontrast */
+    --color-text: #2c3e50;             /* Dunkles Anthrazit */
+    --color-text-light: #7f8c8d;       /* Grau für sekundären Text */
+    --color-text-muted: #95a5a6;      /* Heller für muted Text */
+
+    /* Link-Farben */
+    --color-link: #3498db;            /* Schönes Blau */
+    --color-link-hover: #2980b9;      /* Dunkleres Blau */
+    --color-link-visited: #8e44ad;    /* Lila für besuchte Links */
+
+    /* Hintergrundfarben */
+    --color-bg: #ffffff;              /* Reines Weiß */
+    --color-bg-light: #f8f9fa;        /* Sehr helles Grau */
+    --color-bg-alt: #ecf0f1;          /* Hellgrau für Alternativen */
+    --color-bg-header: #34495e;       /* Dunkler Header */
+    --color-bg-footer: #2c3e50;       /* Dunkler Footer */
+    --color-bg-accent: #e8f4f8;       /* Hellblaues Akzent */
+
+    /* Rahmen und Linien */
+    --color-border: #bdc3c7;          /* Graue Rahmen */
+    --color-border-light: #ecf0f1;    /* Hellere Rahmen */
+
+    /* Akzentfarben */
+    --color-accent: #3498db;          /* Hauptakzent: Blau */
+    --color-accent-secondary: #e74c3c; /* Sekundär: Rot */
+    --color-success: #27ae60;         /* Grün für Erfolg */
+    --color-warning: #f39c12;         /* Orange für Warnungen */
+    --color-error: #e74c3c;           /* Rot für Fehler */
+    --color-info: #17a2b8;            /* Cyan für Info */
+
+    /* Button-Farben */
+    --color-btn-primary: #3498db;     /* Blau für primäre Buttons */
+    --color-btn-secondary: #95a5a6;   /* Grau für sekundäre */
+    --color-btn-success: #27ae60;     /* Grün für Erfolg */
+    --color-btn-danger: #e74c3c;      /* Rot für Gefahr */
+
+    /* Layout */
+    --border-radius: 8px;
+    --spacing-sm: 0.6rem;
+    --spacing-md: 1.2rem;
+    --spacing-lg: 2rem;
+    --max-content-width: 1100px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.15);
+    --shadow-md: 0 6px 12px rgba(0,0,0,0.2);
+    --shadow-lg: 0 12px 30px rgba(0,0,0,0.3);
+}
+
+/* Dunkler Modus als Standard für alle erzwungen */
+:root {
+    /* Dunkle Hintergründe */
+    --color-bg: #1a1a1a;           /* Sehr dunkles Grau */
+    --color-bg-light: #2c2c2c;     /* Etwas heller für Boxen */
+    --color-bg-alt: #333333;      /* Für alternierende Zeilen */
+    --color-bg-header: #34495e;   /* Dunkler Header */
+    --color-bg-footer: #2c3e50;   /* Dunkler Footer */
+    --color-bg-accent: #2c3e50;   /* Akzent-Blau */
+
+    /* Helle Textfarben für dunklen Hintergrund */
+    --color-text: #ecf0f1;        /* Sehr helles Grau */
+    --color-text-light: #bdc3c7;  /* Weißlich-Grau */
+    --color-text-muted: #7f8c8d;  /* Gedimmt */
+
+    /* Rahmen */
+    --color-border: #404040;      /* Dunkle Rahmen */
+    --color-border-light: #555555; /* Hellere Rahmen */
+}
+
+/* Grundlegende Reset & Body */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--primary-font);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background-image: url('images/logo.png');
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #000000;
+    line-height: 1.6;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Haupt-Container für Zentrierung und maximale Breite */
+.main_table {
+    width: 95% !important;
+    max-width: var(--max-content-width);
+    margin: 2rem auto;
+    background: transparent;
+    border-collapse: separate;
+    border-spacing: 0 var(--spacing-md);
+}
+
+/* Inhaltsboxen */
+.main_box,
+.main_list,
+.main_login {
+    background: #1e1e1e !important; /* Komplett blickdicht dunkles Anthrazit */
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Tabellenzeilen */
+.main_list tr:nth-child(even) {
+    background: #252525 !important; /* Etwas helleres Dunkelgrau */
+}
+
+.main_list tr:nth-child(odd) {
+    background: #1a1a1a !important; /* Sehr dunkles Grau */
+}
+
+.main_list td {
+    color: #ffffff !important; 
+    border: 1px solid #333333;
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.main_list tr:hover {
+    background: #34495e !important; /* Dunkles Blau beim Drüberfahren */
+}
+
+/* Header-Zeile in Listen */
+.header_row, .header_row td {
+    background: var(--color-bg-header) !important;
+    color: #ffffff !important;
+}
+
+.header_row .button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #ffffff;
+}
+
+.header_row .button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Überschriften in Boxen */
+.heading_left b, .heading_left p, .heading_right b, .heading_left, .heading_right {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--color-bg-header) 0%, var(--color-bg-footer) 100%);
+}
+
+/* Schatten & Lesbarkeit für Titel */
+.heading_left b {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    font-size: 1.1em;
+}
+
+
+
+/* Links */
+a {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+a:hover,
+a:focus {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+a:visited {
+    color: var(--color-link-visited);
+}
+
+a:active {
+    color: var(--color-accent-secondary);
+}
+
+/* Formularelemente */
+input,
+select,
+textarea,
+.button {
+    font-family: var(--primary-font);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    background: var(--color-bg-light);
+}
+
+.button {
+    cursor: pointer;
+    background: var(--color-btn-primary);
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-btn-primary);
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 0.5px;
+}
+
+.button:hover {
+    background: var(--color-link-hover);
+    border-color: var(--color-link-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.button:active {
+    background: var(--color-accent-secondary);
+    border-color: var(--color-accent-secondary);
+    transform: translateY(0);
+}
+
+/* Verschiedene Button-Typen */
+.button.secondary {
+    background: var(--color-btn-secondary);
+    border-color: var(--color-btn-secondary);
+    color: var(--color-text);
+}
+
+.button.secondary:hover {
+    background: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+.button.success {
+    background: var(--color-btn-success);
+    border-color: var(--color-btn-success);
+}
+
+.button.success:hover {
+    background: #229954;
+    border-_container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Entferne die alte fixe height und Layout-Erzwingung */
+.main_table {
+    width: 95%;
+    max-width: var(--max-content-width);
+    height: auto !important;
+    background: transparent;
+    table-layout: auto;
+}lor-btn-danger);
+    border-color: var(--color-btn-danger);
+}
+
+.button.danger:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+}
+
+/* Tabellen & Layout-Klassen (Original-Struktur erhalten) */
+.main_table {
+    width: 100%;
+    height: 100vh;
+    background: transparent;
+    table-layout: fixed;
+}
+
+.main_box,
+.main_list,
+.main_login {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: box-shadow 0.3s ease;
+}
+
+.main_box:hover,
+.main_list:hover {
+    box-shadow: var(--shadow-lg);
+}
+}
+
+/* Header/Footer-Bereiche */
+.heading_left,
+.heading_right,
+.footer_1_pce,
+.footer_left,
+.footer_right {
+    background: linear-gradient(135deg, var(--color-bg-header) 0%, var(--color-bg-footer) 100%);
+    color: white;
+    padding: var(--spacing-md);
+    font-weight: 600;
+    font-size: 0.9em;
+    text-align: center;
+    border: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.heading_left  {
+    text-align: left;
+    border-radius: var(--border-radius) 0 0 0;
+}
+.heading_right {
+    text-align: right;
+    border-radius: 0 var(--border-radius) 0 0;
+}
+
+.footer_1_pce,
+.footer_left,
+.footer_right {
+    border-top: 2px solid var(--color-accent);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+/* Spezielle Login-Klasse */
+.main_login {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    border: 2px solid var(--color-accent);
+    background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-light) 100%);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Tabellen-Listen */
+.main_list {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.main_list tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.main_list tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+.main_list tr:hover {
+    background: #e9ecef;
+    transition: background-color 0.2s ease;
+}
+
+.main_list td,
+.main_list th {
+    padding: var(--spacing-md) var(--spacing-sm);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text);
+    vertical-align: middle;
+}
+
+.main_list th {
+    background: linear-gradient(135deg, var(--color-bg-header) 0%, var(--color-bg-footer) 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--color-accent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Responsives Verhalten */
+@media (max-width: 768px) {
+    .main_table {
+        display: block;
+        height: auto;
+    }
+
+    .main_box,
+    .main_list {
+        width: 95%;
+        margin: var(--spacing-md) auto;
+        display: block;
+    }
+
+    .main_list {
+        overflow-x: auto; /* Horizontal scroll für Tabellen */
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="email"],
+    textarea {
+        width: 100%;
+    }
+
+    .button {
+        width: 100%;
+        margin: var(--spacing-sm) 0;
+        display: block;
+    }
+
+    /* Flexbox für Header/Footer auf Mobile */
+    .heading_left,
+    .heading_right {
+        text-align: center;
+        display: block;
+        width: 100%;
+    }
+
+    .footer_left,
+    .footer_right {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Zusätzliche responsive Verbesserungen */
+@media (max-width: 480px) {
+    body {
+        font-size: var(--font-size-small);
+    }
+
+    .main_box {
+        padding: var(--spacing-sm);
+    }
+
+    .main_list td,
+    .main_list th {
+        padding: var(--spacing-sm) 0.25rem; /* Weniger Padding */
+        font-size: var(--font-size-small);
+    }
+}
+
+/* Moderne Effekte */
+.main_box {
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.main_box:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.main_list {
+    transition: all 0.3s ease;
+}
+
+.main_list:hover {
+    transform: translateY(-1px);
+}
+
+.button {
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Flexbox-Alternative für Layout (optional, falls Tabellen ersetzt werden) */
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.flex-header {
+    background: var(--color-bg-header);
+    padding: var(--spacing-md);
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.flex-main {
+    flex: 1;
+    padding: var(--spacing-lg);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.flex-content {
+    max-width: 1200px;
+    width: 100%;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.flex-footer {
+    background: var(--color-bg-header);
+    padding: var(--spacing-md);
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Hilfsklassen */
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.mt-1 { margin-top: var(--spacing-sm); }
+.mt-2 { margin-top: var(--spacing-md); }
+.p-1 { padding: var(--spacing-sm); }
+.d-flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+
+/* QR-Code Styles */
+.qr-code-container {
+    display: inline-block;
+    text-align: center;
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    margin-left: var(--spacing-md);
+    vertical-align: top;
+}
+
+.qr-code-container img {
+    display: block;
+    margin: 0 auto var(--spacing-sm);
+    border-radius: calc(var(--border-radius) - 1px);
+    background: white;
+}
+
+.qr-code-container small {
+    font-size: var(--font-size-small);
+    color: var(--color-text);
+    opacity: 0.7;
+}
+
+/* Wunsch-Items mit QR-Codes */
+.wish-item-with-qr {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+}
+
+.wish-content {
+    flex: 1;
+}
+
+/* Responsive QR-Codes */
+@media (max-width: 768px) {
+    .qr-code-container {
+        margin-left: var(--spacing-sm);
+        padding: calc(var(--spacing-sm) / 2);
+    }
+
+    .qr-code-container img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+
+    .wish-item-with-qr {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .qr-code-container {
+        margin-left: 0;
+        margin-top: var(--spacing-sm);
+    }
+}
+
+/* Einstellungen Styles */
+.settings_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
+}
+
+.settings_table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+}
+
+.settings_table td:first-child {
+    font-weight: bold;
+    width: 200px;
+}
+
+.settings_table select,
+.settings_table input[type="checkbox"] {
+    margin: var(--spacing-sm) 0;
+}
+/* QR-Code Vergroesserung (Modal) */
+.qr-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.95);
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.qr-modal.active {
+    display: flex;
+}
+
+.qr-modal img {
+    max-width: 90%;
+    max-height: 80%;
+    border: 15px solid white;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+.qr-modal .close-hint {
+    color: #ffffff;
+    margin-top: 30px;
+    font-size: 1.4em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 30px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 5px;
+}
+
+.qr-clickable {
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid white;
+    border-radius: 4px;
+    background: white;
+}
+
+.qr-clickable:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+}
+
+.qr-label {
+    font-size: 0.7em;
+    color: #64B5F6;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.qr-label:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}

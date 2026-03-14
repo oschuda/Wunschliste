@@ -1,0 +1,23 @@
+﻿# Private Konfigurationen
+inc/config.php
+data/*.sqlite
+data/*.db
+
+# System-Dateien
+Thumbs.db
+.DS_Store
+*.log
+
+# Cache & Temporäres
+data/qr-cache/*
+!data/qr-cache/.gitkeep
+
+# Backup & Altdaten
+*.bak
+*.sql
+migration_*.sql
+phpinfo.php
+check_db.php
+repair_db.php
+fix_utf8.php
+migrate_db.php

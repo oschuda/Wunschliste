@@ -1,0 +1,276 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-11-13 20:37+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: addwish.php:53 wishes.php:144
+msgid "Add Wish"
+msgstr ""
+
+#: addwish.php:54 details.php:94 editwish.php:55 register.php:86
+#: viewperson.php:61 wishes.php:71
+msgid "Back"
+msgstr ""
+
+#: addwish.php:58 editwish.php:65
+msgid "Description"
+msgstr ""
+
+#: addwish.php:60 claimed.php:31 editwish.php:67
+msgid "Link"
+msgstr ""
+
+#: addwish.php:62 claimed.php:30 editwish.php:69 viewperson.php:124
+#: wishes.php:82 wishes.php:116
+msgid "Notes"
+msgstr ""
+
+#: addwish.php:68
+msgid "Submit"
+msgstr ""
+
+#: addwish.php:69 details.php:176 login.php:108 register.php:159
+msgid "Clear"
+msgstr ""
+
+#: claimed.php:28 wishes.php:114
+msgid "Owner"
+msgstr ""
+
+#: claimed.php:29 viewperson.php:123 wishes.php:81 wishes.php:115
+msgid "Wish"
+msgstr ""
+
+#: details.php:93
+msgid "Edit Details"
+msgstr ""
+
+#: details.php:97 register.php:89
+msgid "First Name"
+msgstr ""
+
+#: details.php:98 details.php:102 register.php:90 register.php:94
+#: register.php:98 register.php:102
+msgid "Required"
+msgstr ""
+
+#: details.php:101 register.php:93
+msgid "Last Name"
+msgstr ""
+
+#: details.php:105 login.php:92 register.php:97
+msgid "Username"
+msgstr ""
+
+#: details.php:109 login.php:100 register.php:101
+msgid "Password"
+msgstr ""
+
+#: details.php:109
+msgid "Complete to change"
+msgstr ""
+
+#: details.php:113
+msgid "Birthday"
+msgstr ""
+
+#: details.php:123 register.php:115
+msgid "January"
+msgstr ""
+
+#: details.php:124 register.php:116
+msgid "February"
+msgstr ""
+
+#: details.php:125 register.php:117
+msgid "March"
+msgstr ""
+
+#: details.php:126 register.php:118
+msgid "April"
+msgstr ""
+
+#: details.php:127 register.php:119
+msgid "May"
+msgstr ""
+
+#: details.php:128 register.php:120
+msgid "June"
+msgstr ""
+
+#: details.php:129 register.php:121
+msgid "July"
+msgstr ""
+
+#: details.php:130 register.php:122
+msgid "August"
+msgstr ""
+
+#: details.php:131 register.php:123
+msgid "September"
+msgstr ""
+
+#: details.php:132 register.php:124
+msgid "October"
+msgstr ""
+
+#: details.php:133 register.php:125
+msgid "November"
+msgstr ""
+
+#: details.php:134 register.php:126
+msgid "December"
+msgstr ""
+
+#: details.php:146 register.php:138
+msgid "Postal Address"
+msgstr ""
+
+#: details.php:153 register.php:143 viewperson.php:91
+msgid "Country"
+msgstr ""
+
+#: details.php:157 register.php:147 viewperson.php:95
+msgid "Email"
+msgstr ""
+
+#: details.php:161 register.php:151 viewperson.php:99
+msgid "Phone"
+msgstr ""
+
+#: details.php:165 register.php:155
+msgid "Show Details"
+msgstr ""
+
+#: details.php:165 register.php:155
+msgid "Allow others to view"
+msgstr ""
+
+#: details.php:176
+msgid "Update"
+msgstr ""
+
+#: editwish.php:54 wishes.php:145
+msgid "Edit Wish"
+msgstr ""
+
+#: editwish.php:75
+msgid "Save Changes"
+msgstr ""
+
+#: index.php:71
+msgid "Wishlists"
+msgstr ""
+
+#: index.php:71
+msgid "Logged in as"
+msgstr ""
+
+#: index.php:74
+msgid "Logout"
+msgstr ""
+
+#: index.php:81 viewperson.php:76
+msgid "Lastname"
+msgstr ""
+
+#: index.php:82 viewperson.php:72
+msgid "Firstname"
+msgstr ""
+
+#: index.php:83 register.php:105
+msgid "Birthdate"
+msgstr ""
+
+#: index.php:84
+msgid "Total Wishes"
+msgstr ""
+
+#: index.php:85 wishes.php:107
+msgid "Claimed Wishes"
+msgstr ""
+
+#: index.php:86 viewperson.php:125 wishes.php:83 wishes.php:117
+msgid "Select"
+msgstr ""
+
+#: index.php:110
+msgid "Edit Wishes/Claims"
+msgstr ""
+
+#: index.php:111
+msgid "Edit My Details"
+msgstr ""
+
+#: index.php:114
+msgid "View Selected"
+msgstr ""
+
+#: login.php:84
+msgid "phpWishlist Login"
+msgstr ""
+
+#: login.php:87 register.php:85 register.php:159
+msgid "Register"
+msgstr ""
+
+#: login.php:108
+msgid "Login"
+msgstr ""
+
+#: viewperson.php:58
+msgid "View Person"
+msgstr ""
+
+#: viewperson.php:83
+msgid "Date of Birth"
+msgstr ""
+
+#: viewperson.php:87
+msgid "Address"
+msgstr ""
+
+#: viewperson.php:147
+msgid "Claimed"
+msgstr ""
+
+#: viewperson.php:160
+msgid "No wishes"
+msgstr ""
+
+#: viewperson.php:167
+msgid "Claim"
+msgstr ""
+
+#: wishes.php:70
+msgid "Wishlist & Claims"
+msgstr ""
+
+#: wishes.php:74
+msgid "My Wishes"
+msgstr ""
+
+#: wishes.php:107
+msgid "[Printer Friendly]"
+msgstr ""
+
+#: wishes.php:146
+msgid "Delete Wish"
+msgstr ""
+
+#: wishes.php:149
+msgid "Release Claimed"
+msgstr ""
