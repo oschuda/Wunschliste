@@ -32,10 +32,12 @@ function translate(string $text): string {
 }
 
 /**
- * Fallback for legacy gettext calls
+ * Fallback for legacy gettext calls (only if not already provided by PHP extension)
  */
-function gettext(string $text): string {
-    return translate($text);
+if (!function_exists('gettext')) {
+    function gettext(string $text): string {
+        return translate($text);
+    }
 }
 
 if (!function_exists('_')) {
