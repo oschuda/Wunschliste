@@ -39,41 +39,57 @@ class UrlMetadataFetcher {
         return $data;
     }
 
-    private static function getHtml(string $url): ?string {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    private static function getHtml(string $url): ?string
+    {
+        $ch = curl_init($url);
+
+        // Sehr browser-ähnliche Header-Kombination (Dein Vorschlag)
+        $headers = [
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
             'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
             'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
-            'Cache-Control: max-age=0',
+            'Accept-Encoding: gzip, deflate, br',
             'Connection: keep-alive',
-            'Upgrade-Insecure-Requests: 1'
+            'Upgrade-Insecure-Requests: 1',
+            'Sec-Fetch-Dest: document',
+            'Sec-Fetch-Mode: navigate',
+            'Sec-Fetch-Site: none',
+            'Sec-Fetch-User: ?1',
+            'Cache-Control: max-age=0',
+        ];
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 20,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => false, // Nur temporär – später auf true setzen
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_ENCODING       => 'gzip, deflate', // Komprimierung akzeptieren
+            CURLOPT_HEADER         => false,
         ]);
-        
+
         $html = curl_exec($ch);
-        
-        if ($html === false) {
-            $error = curl_error($ch);
-            error_log("CURL Fetch Error for $url: $error");
-            curl_close($ch);
-            return null;
-        }
-        
+        $error = curl_error($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
-        if ($httpCode >= 400) {
-            error_log("HTTP Error $httpCode for $url");
+
+        if ($html === false || $httpCode >= 400) {
+            error_log("Fetch-Fehler für $url | HTTP $httpCode | cURL: $error");
             return null;
         }
-        
-        return $html ?: null;
+
+        // Encoding korrigieren (Verbesserte Version deines Vorschlags)
+        if (!empty($html)) {
+            $encoding = mb_detect_encoding($html, ['UTF-8', 'ISO-8859-1', 'ASCII'], true);
+            if ($encoding && $encoding !== 'UTF-8') {
+                $html = mb_convert_encoding($html, 'UTF-8', $encoding);
+            }
+        }
+
+        return $html;
     }
 
     private static function extractTitle(DOMXPath $xpath): string {
