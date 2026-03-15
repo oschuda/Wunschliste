@@ -43,12 +43,14 @@ class UrlMetadataFetcher {
     {
         $ch = curl_init($url);
 
-        // Sehr browser-ähnliche Header-Kombination (Dein Vorschlag)
+        // Maximale Browser-Simulation (Header-Reihenfolge & Cookies)
         $headers = [
+            'Host: ' . parse_url($url, PHP_URL_HOST),
             'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
             'Accept-Encoding: gzip, deflate, br',
+            'DNT: 1',
             'Connection: keep-alive',
             'Upgrade-Insecure-Requests: 1',
             'Sec-Fetch-Dest: document',
@@ -62,13 +64,14 @@ class UrlMetadataFetcher {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 20,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_SSL_VERIFYPEER => false, // Nur temporär – später auf true setzen
+            CURLOPT_TIMEOUT        => 25,
+            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_ENCODING       => 'gzip, deflate', // Komprimierung akzeptieren
-            CURLOPT_HEADER         => false,
+            CURLOPT_ENCODING       => 'gzip, deflate',
+            CURLOPT_AUTOREFERER    => true,
+            CURLOPT_COOKIEJAR      => tempnam(sys_get_temp_dir(), 'aw_cookie_'), // Session simulieren
         ]);
 
         $html = curl_exec($ch);
