@@ -187,11 +187,19 @@ if (empty($fullName)) $fullName = $userToView['u_name'];
                             }
                             ?>
                             <div class="wish-card <?= $isPurchased ? 'is-purchased' : '' ?>" tabindex="0">
-                                <div class="wish-card-image">
-                                    <?php if (!empty($wish['url']) && str_contains($wish['url'], 'amazon')): ?>
-                                        <img src="https://www.google.com/s2/favicons?domain=amazon.de&sz=64" alt="Amazon" style="width: 32px; height: 32px; position: absolute; top: 10px; left: 10px; opacity: 0.5;">
+                                <div class="wish-card-image" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fdfdfd;">
+                                    <?php 
+                                        $imgUrl = '';
+                                        if (!empty($wish['notes']) && preg_match('/Bild:\s*(https?:\/\/\S+)/i', $wish['notes'], $m)) {
+                                            $imgUrl = $m[1];
+                                        }
+                                    ?>
+                                    <?php if ($imgUrl): ?>
+                                        <img src="<?= htmlspecialchars($imgUrl) ?>" style="width: 100%; height: 100%; object-fit: contain; padding: 5px;">
+                                    <?php else: ?>
+                                        <span style="font-size: 3rem;">🎁</span>
                                     <?php endif; ?>
-                                    🎁
+
                                     <?php if ($wish['price'] > 0): ?>
                                         <div class="price-badge"><?= number_format((float)$wish['price'], 2, ',', '.') ?> €</div>
                                     <?php endif; ?>
@@ -206,7 +214,10 @@ if (empty($fullName)) $fullName = $userToView['u_name'];
                                         <?php endif; ?>
                                     </h3>
                                     <div class="wish-card-notes">
-                                        <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
+                                        <?php 
+                                            $cleanNotes = preg_replace('/Bild:\s*(https?:\/\/\S+)/i', '', $wish['notes'] ?? '');
+                                            echo nl2br(htmlspecialchars(trim($cleanNotes)));
+                                        ?>
                                     </div>
                                 </div>
 

@@ -162,15 +162,31 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
                 <div class="wish-grid">
                     <?php foreach ($items as $item): ?>
                         <div class="wish-card <?= $item['is_purchased'] ? 'is-purchased' : '' ?>" tabindex="0">
-                            <div class="wish-card-image">
-                                🎁
+                            <div class="wish-card-image" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fdfdfd;">
+                                <?php 
+                                    $imgUrl = '';
+                                    if (!empty($item['notes']) && preg_match('/Bild:\s*(https?:\/\/\S+)/i', $item['notes'], $m)) {
+                                        $imgUrl = $m[1];
+                                    }
+                                ?>
+                                <?php if ($imgUrl): ?>
+                                    <img src="<?= htmlspecialchars($imgUrl) ?>" style="width: 100%; height: 100%; object-fit: contain; padding: 5px;">
+                                <?php else: ?>
+                                    <span style="font-size: 3rem;">🎁</span>
+                                <?php endif; ?>
+
                                 <?php if ($item['price'] > 0): ?>
                                     <div class="price-badge"><?= number_format((float)$item['price'], 2, ',', '.') ?> €</div>
                                 <?php endif; ?>
                             </div>
                             <div class="wish-card-body">
                                 <h3><?= htmlspecialchars($item['title']) ?></h3>
-                                <div class="wish-card-notes"><?= nl2br(htmlspecialchars($item['notes'] ?? '')) ?></div>
+                                <div class="wish-card-notes">
+                                    <?php 
+                                        $cleanNotes = preg_replace('/Bild:\s*(https?:\/\/\S+)/i', '', $item['notes'] ?? '');
+                                        echo nl2br(htmlspecialchars(trim($cleanNotes)));
+                                    ?>
+                                </div>
                             </div>
                             <div class="wish-card-footer">
                                 <?php if ($item['claimed']): ?>

@@ -223,8 +223,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 if (data.title) titleInput.value = data.title;
                 if (data.price) priceInput.value = data.price;
-                if (data.image && !notesInput.value.includes('Bild:')) {
-                    notesInput.value = 'Bild: ' + data.image + '\n' + notesInput.value;
+                if (data.image) {
+                    const imgPreview = document.createElement('div');
+                    imgPreview.innerHTML = `
+                        <div style="margin-top: 15px; text-align: center; border: 1px dashed var(--accent-color); padding: 10px; border-radius: 8px; background: rgba(52, 152, 219, 0.05);">
+                            <img src="${data.image}" style="max-height: 120px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px;">
+                            <div style="font-size: 0.75rem; color: var(--primary-color);">Vorschau eingefügt</div>
+                            <input type="hidden" name="image_url" value="${data.image}">
+                        </div>
+                    `;
+                    notesInput.parentNode.insertBefore(imgPreview, notesInput);
+                    
+                    // Bild-URL auch in die Notizen (als Backup und für die Anzeige)
+                    if (!notesInput.value.includes('Bild:')) {
+                        notesInput.value = 'Bild: ' + data.image + '\n' + notesInput.value;
+                    }
                 }
             } else if (data.error) {
                 console.error('Fetch Error:', data.error);
