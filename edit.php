@@ -80,12 +80,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
                 <div class="form-group">
                     <label for="url"><?= translate("Link / Verknüpfung") ?></label>
-                    <input name="url" id="url" type="text" value="<?= htmlspecialchars($formData["url"]) ?>" placeholder="https://...">
+                    <div style="display: flex; gap: 5px;">
+                        <input name="url" id="url" type="text" value="<?= htmlspecialchars($formData["url"]) ?>" placeholder="https://..." style="flex: 1;">
+                        <button type="button" id="btn-fetch" class="button button-success" title="<?= translate("Details automatisch abrufen") ?>">🔍</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="price"><?= translate("Preis (ca.)") ?></label>
                     <input name="price" id="price" type="text" value="<?= number_format((float)$formData["price"], 2, ",", "") ?>" placeholder="0,00 €">
                 </div>
+            </div>
+
+            <div id="fetch-loader" style="display:none; color: var(--primary-color); font-size: 0.9rem; margin-bottom: 10px;">
+                ⏳ <?= translate("Lade Produktdaten...") ?>
             </div>
 
             <div class="form-group">
@@ -108,6 +115,67 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <footer class="main-footer">
     <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?></div>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnFetch = document.getElementById('btn-fetch');
+    const urlInput = document.getElementById('url');
+    const titleInput = document.getElementById('title');
+    const priceInput = document.getElementById('price');
+    const notesInput = document.getElementById('notes');
+    const loader = document.getElementById('fetch-loader');
+    const csrfToken = '<?= get_csrf_token() ?>';
+
+    btnFetch.addEventListener('click', async () => {
+        const url = urlInput.value.trim();
+        if (!url) return alert('<?= translate("Bitte zuerst einen Link einfügen!") ?>');
+
+        btnFetch.disabled = true;
+        loader.style.display = 'block';
+
+        const formData = new FormData();
+        formData.append('url', url);
+        formData.append('csrf_token', csrfToken);
+
+        try {
+            const response = await fetch('inc/fetch/api.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                if (data.title) titleInput.value = data.title;
+                if (data.price) priceInput.value = data.price;
+                if (data.image) {
+                    const imgPreview = document.createElement('div');
+                    imgPreview.innerHTML = `
+                        <div style="margin-top: 15px; text-align: center; border: 1px dashed var(--accent-color); padding: 10px; border-radius: 8px; background: rgba(52, 152, 219, 0.05);">
+                            <img src="${data.image}" style="max-height: 120px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px;">
+                            <div style="font-size: 0.75rem; color: var(--primary-color);">Vorschau eingefügt</div>
+                        </div>
+                    `;
+                    notesInput.parentNode.insertBefore(imgPreview, notesInput);
+                    
+                    if (!notesInput.value.includes('Bild:')) {
+                        notesInput.value = 'Bild: ' + data.image + '\n' + notesInput.value;
+                    }
+                }
+            } else if (data.error) {
+                console.error('Fetch Error:', data.error);
+                alert('<?= translate("Konnte Daten nicht automatisch abrufen.") ?>');
+            }
+        } catch (error) {
+            console.error('Fetch Failed:', error);
+            alert('<?= translate("Netzwerkfehler beim Abrufen der Daten.") ?>');
+        } finally {
+            btnFetch.disabled = false;
+            loader.style.display = 'none';
+        }
+    });
+});
+</script>
 
 </body>
 </html>
