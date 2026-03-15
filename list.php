@@ -254,40 +254,4 @@ function showQRCode(title, id) {
 
 </body>
 </html>
-                                    </a>
-                                <?php else: ?>
-                                    <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-price">
-                                <?= $wish['price'] ? number_format((float)$wish['price'], 2, ',', '.') . ' €' : '-' ?>
-                            </div>
-                            <div class="col-notes">
-                                <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
-                            </div>
-                            <div class="col-qr">
-                                <?php if (!empty($wish['url'])): ?>
-                                    <?= getQRCodeHtml($wish['url'], $currentUserId) ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-select">
-                                <label class="checkbox-container">
-                                    <input type="checkbox" name="d_selected[]" value="<?= (int)$wish['id'] ?>">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-
-            <div class="button-group align-right">
-                <button type="submit" class="button button-warning" name="rel_claimed" onclick="return confirm('<?= gettext("Sicher, dass Du diese Reservierung(en) stornieren willst?") ?>');">↶ <?= gettext("Reservierung stornieren") ?></button>
-            </div>
-        </form>
-    </section>
-</main>
-
-</body>
-</html>
 <?php exit; ?>
