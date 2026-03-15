@@ -101,6 +101,32 @@ class UrlMetadataFetcher {
             }
         }
 
+        // eBay spezifische Logik
+        if (str_contains($url, 'ebay.')) {
+            $ebayQueries = [
+                "//div[contains(@class, 'x-price-primary')]/span",
+                "//span[@itemprop='price']",
+                "//div[@class='display-price']"
+            ];
+            foreach ($ebayQueries as $query) {
+                $node = $xpath->query($query)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+        }
+
+        // Temu spezifische Logik (oft via OpenGraph oder spezifische Preis-Tags)
+        if (str_contains($url, 'temu.')) {
+            $temuQueries = [
+                "//meta[@property='og:price:amount']/@content",
+                "//div[contains(@class, 'price-container')]",
+                "//span[contains(@class, 'price-text')]"
+            ];
+            foreach ($temuQueries as $query) {
+                $node = $xpath->query($query)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+        }
+
         // MediaMarkt / Saturn spezifische Logik
         if (str_contains($url, 'mediamarkt') || str_contains($url, 'saturn')) {
             $mmQueries = [
