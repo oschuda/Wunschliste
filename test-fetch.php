@@ -6,6 +6,23 @@
 
 $url = $_GET['url'] ?? 'https://www.amazon.de/dp/B0C7C7QJ7Q'; // Standard-Beispiel falls keine URL übergeben wurde
 
+// PRÜFUNG: Ist cURL überhaupt installiert?
+if (!function_exists('curl_init')) {
+    echo "<!DOCTYPE html><html><head><title>cURL Error</title><style>body{font-family:sans-serif;background:#2c3e50;color:white;padding:50px;text-align:center;} .error-card{background:#e74c3c;padding:30px;border-radius:10px;display:inline-block;max-width:600px;box-shadow:0 10px 30px rgba(0,0,0,0.3);}</style></head><body>";
+    echo "<div class='error-card'>";
+    echo "<h1>❌ PHP extension 'cURL' is missing</h1>";
+    echo "<p>Die Funktion <strong>curl_init()</strong> wurde nicht gefunden.</p>";
+    echo "<hr style='border:none;border-top:1px solid rgba(255,255,255,0.3);margin:20px 0;'>";
+    echo "<p style='text-align:left;'><strong>Lösung für Synology / Webstation:</strong><br>";
+    echo "1. Öffne das <strong>Web Station</strong> Paket.<br>";
+    echo "2. Gehe zu <strong>Skriptsprach-Einstellungen</strong>.<br>";
+    echo "3. Wähle dein PHP-Profil (z.B. PHP 8.2 oder 8.4) und klicke auf <strong>Bearbeiten</strong>.<br>";
+    echo "4. Suche im Reiter <strong>Erweiterungen</strong> nach <strong>'curl'</strong> und aktiviere das Häkchen.<br>";
+    echo "5. Speichere die Einstellungen.</p>";
+    echo "</div></body></html>";
+    exit;
+}
+
 $ch = curl_init($url);
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
