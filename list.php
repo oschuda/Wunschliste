@@ -246,58 +246,14 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
     </section>
 </main>
 
-                            </div>
-                            <div class="col-qr">
-                                <?php if (!empty($wish['url'])): ?>
-                                    <?= getQRCodeHtml($wish['url'], $currentUserId) ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-select">
-                                <label class="checkbox-container">
-                                    <input type="checkbox" name="w_selected[]" value="<?= (int)$wish['id'] ?>">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
+<script>
+function showQRCode(title, id) {
+    alert("QR Code für " + title + " (ID: " + id + ")");
+}
+</script>
 
-            <div class="button-group align-right">
-                <button type="submit" class="button button-success" name="add_wish">+ <?= gettext("Wunsch hinzufügen") ?></button>
-                <button type="submit" class="button button-danger" name="del_wish" onclick="return confirm('Wünsche wirklich löschen?');">X <?= gettext("Markierte löschen") ?></button>
-            </div>
-
-            <!-- Reservierte Wünsche -->
-            <div class="section-header mt-30">
-                <h2><?= gettext("Reservierte Wünsche") ?></h2>
-                <a href="reserved.php" target="_blank" class="link-secondary">[<?= gettext("Druckerfreundlich") ?>]</a>
-            </div>
-
-            <div class="list-table claimed-wishes-table">
-                <div class="list-header">
-                    <div class="col-id">#</div>
-                    <div class="col-owner"><?= gettext("Besitzer") ?></div>
-                    <div class="col-title"><?= gettext("Wunsch") ?></div>
-                    <div class="col-price"><?= gettext("Preis") ?></div>
-                    <div class="col-notes"><?= gettext("Notizen") ?></div>
-                    <div class="col-qr">QR</div>
-                    <div class="col-select"><?= gettext("Auswählen") ?></div>
-                </div>
-
-                <?php if (empty($claimedWishes)): ?>
-                    <div class="list-row empty">
-                        <div class="col-full"><?= gettext("Du hast noch keine Wünsche reserviert.") ?></div>
-                    </div>
-                <?php else: ?>
-                    <?php $x = 1; foreach ($claimedWishes as $wish): ?>
-                        <div class="list-row alternating-row">
-                            <div class="col-id"><?= $x++ ?></div>
-                            <div class="col-owner"><?= htmlspecialchars($wish['owner_name'] ?? gettext('Unbekannt')) ?></div>
-                            <div class="col-title">
-                                <?php if (!empty($wish['url'])): ?>
-                                    <a href="<?= htmlspecialchars($wish['url'] ?: '') ?>" target="_blank" class="link-external">
-                                        <?= htmlspecialchars($wish['title'] ?: '') ?>
+</body>
+</html>
                                     </a>
                                 <?php else: ?>
                                     <?= htmlspecialchars($wish['title'] ?: '') ?>
