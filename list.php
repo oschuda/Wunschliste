@@ -180,12 +180,14 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
                                 <?php endif; ?>
                             </div>
                             <div class="wish-card-actions">
-                                <a href="edit.php?editID=<?= (int)$item['item_id'] ?? (int)$item['id'] ?>" class="button"><?= translate("Bearbeiten") ?></a>
+                                <a href="edit.php?editID=<?= (int)$item['id'] ?>" class="button"><?= translate("Bearbeiten") ?></a>
                                 <label style="border: 1px solid var(--accent-color); color: var(--accent-color);">
                                     <input type="checkbox" name="w_selected[]" value="<?= (int)$item['id'] ?>" style="width: auto;">
                                     <span>🗑️ <?= translate("Löschen") ?></span>
                                 </label>
-                                <button type="button" class="button button-outline" onclick="showQRCode('<?= htmlspecialchars($item['title']) ?>', '<?= (int)$item['id'] ?>')">📱 QR Code</button>
+                                <?php if (!empty($item['url'])): ?>
+                                    <button type="button" class="button button-outline" onclick="showQRModalFromData('<?= base64_encode(getQRCodeDataOnly($item['url'], $currentUserId)) ?>')">📱 QR Code</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -247,9 +249,7 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
 </main>
 
 <script>
-function showQRCode(title, id) {
-    alert("QR Code für " + title + " (ID: " + id + ")");
-}
+// Funktion gelöscht, da sie nun über das Modal in qr_helper_modal.php abgewickelt wird
 </script>
 
 </body>

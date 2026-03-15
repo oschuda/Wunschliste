@@ -12,8 +12,14 @@ function getQRModalHtml(): string {
     </div>
     <script>
     function showQRModal(src) {
+        if (!src) return;
         document.getElementById("qrModalImg").src = src;
         document.getElementById("qrModal").classList.add("active");
+    }
+    function showQRModalFromData(base64Data) {
+        if (!base64Data) return;
+        const src = atob(base64Data);
+        showQRModal(src);
     }
     </script>';
 }

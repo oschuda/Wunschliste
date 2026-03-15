@@ -68,3 +68,12 @@ function getQRCodeHtml(string $url, $userId = null, $size = null): string {
     return "<div class=\x27qr-code-container\x27><img src=\x27$qrData\x27 width=\x27$displaySize\x27 height=\x27$displaySize\x27 class=\x27qr-clickable\x27 onclick=\x27showQRModal(this.src)\x27 title=\x27$lbl\x27><span class=\x27qr-label\x27 onclick=\x27showQRModal(this.previousElementSibling.src)\x27>$lbl</span></div>";
 }
 }
+if (!function_exists("getQRCodeDataOnly")) {
+function getQRCodeDataOnly(string $url, $userId = null): string {
+    if (empty($url)) return "";
+    if (!preg_match("#^https?://#i", $url)) $url = "https://" . $url;
+    $settings = $userId ? getUserQRSettings($userId) : ["size" => "medium", "cache_enabled" => true];
+    $sizeConfig = getQRSizeConfig($settings["size"]);
+    return getCachedQRCode($url, ["qr_size" => $sizeConfig["qr_size"], "cache_enabled" => $settings["cache_enabled"]]);
+}
+}
