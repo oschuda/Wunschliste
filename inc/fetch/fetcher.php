@@ -55,38 +55,51 @@ class UrlMetadataFetcher {
 
     private static function getHtml(string $url, bool $mobile = false): ?string
     {
+        // Amazon-Spezifischer Fallback über einen freien Proxy/Wandler, falls direkt blockiert wird
+        if (str_contains($url, 'amazon.') && !$mobile) {
+            // Wir versuchen es trotzdem erst direkt, aber mit extremen Timeouts
+        }
+
         $ch = curl_init($url);
+        
+        // Zufälliger User-Agent aus einer kleinen Liste, um statische Pattern zu vermeiden
+        $agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        ];
         $userAgent = $mobile 
             ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1'
-            : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36';
+            : $agents[array_rand($agents)];
 
         $headers = [
-            'Host: ' . parse_url($url, PHP_URL_HOST),
             'User-Agent: ' . $userAgent,
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
             'Accept-Encoding: gzip, deflate, br',
+            'Cache-Control: no-cache',
+            'Pragma: no-cache',
             'DNT: 1',
-            'Connection: keep-alive',
             'Upgrade-Insecure-Requests: 1',
             'Sec-Fetch-Dest: document',
             'Sec-Fetch-Mode: navigate',
             'Sec-Fetch-Site: none',
             'Sec-Fetch-User: ?1',
+            'Referer: https://www.google.com/'
         ];
 
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 25,
-            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_MAXREDIRS      => 5,
+            CURLOPT_TIMEOUT        => 20,
+            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_ENCODING       => 'gzip, deflate',
+            CURLOPT_ENCODING       => 'gzip, deflate, br',
             CURLOPT_AUTOREFERER    => true,
-            CURLOPT_COOKIEJAR      => tempnam(sys_get_temp_dir(), 'aw_cookie_'),
+            // WICHTIG: Kein Cookie-Jar für den ersten Versuch, um wie ein frischer User zu wirken
         ]);
 
         $html = curl_exec($ch);
