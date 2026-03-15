@@ -45,10 +45,34 @@ class UrlMetadataFetcher {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Cache-Control: max-age=0',
+            'Connection: keep-alive',
+            'Upgrade-Insecure-Requests: 1'
+        ]);
+        
         $html = curl_exec($ch);
+        
+        if ($html === false) {
+            $error = curl_error($ch);
+            error_log("CURL Fetch Error for $url: $error");
+            curl_close($ch);
+            return null;
+        }
+        
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+        
+        if ($httpCode >= 400) {
+            error_log("HTTP Error $httpCode for $url");
+            return null;
+        }
+        
         return $html ?: null;
     }
 
