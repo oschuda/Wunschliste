@@ -92,21 +92,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
 // --------------------------------------------------
 $pdo = Database::get();
 $ownWishesStmt = $pdo->prepare("
-    SELECT id, title, url, price, notes
+    SELECT id, title, url, price, notes, category, claimed, is_purchased
     FROM wishes 
     WHERE owner = ?
-    ORDER BY id DESC
+    ORDER BY category ASC, id DESC
 ");
 $ownWishesStmt->execute([$currentUserId]);
 $ownWishes = $ownWishesStmt->fetchAll();
+
+$groupedOwn = [];
+foreach ($ownWishes as $ow) {
+    $cat = $ow['category'] ?: 'Standard';
+    $groupedOwn[$cat][] = $ow;
+}
 
 // --------------------------------------------------
 // Reservierte Wünsche laden (von anderen)
 // --------------------------------------------------
 $claimedWishesStmt = $pdo->prepare("
     SELECT 
-        w.id, w.title, w.url, w.price, w.notes, 
-        a.f_name AS owner_name
+        w.id, w.title, w.url, w.price, w.notes, w.is_purchased,
+        a.f_name AS owner_name, a.id AS owner_id
     FROM wishes w
     JOIN users a ON w.owner = a.id
     WHERE w.claimed = ?
@@ -117,38 +123,30 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="<?= $_SESSION['lang'] ?? 'de' ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= gettext("Wunschliste & Reservierungen") ?></title>
+    <title><?= translate("Wunschliste & Reservierungen") ?></title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body class="is-centered">
 
 <header class="main-header">
     <div class="header-content">
-        <h1><?= gettext("Wunschliste & Reservierungen") ?></h1>
+        <h1><?= translate("Meine Wünsche") ?></h1>
         <div class="header-actions">
-            <a href="settings.php" class="button"><?= gettext("Einstellungen") ?></a>
-            <form method="post" style="display:inline;">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                <button type="submit" name="back" class="button"><?= gettext("Zurück") ?> >></button>
-            </form>
+            <a href="add.php" class="button button-success">+ <?= translate("Wunsch hinzufügen") ?></a>
+            <a href="settings.php" class="button button-outline">⚙️</a>
+            <a href="index.php" class="button"><?= translate("Dashboard") ?></a>
         </div>
     </div>
 </header>
 
 <main class="container">
-    <section class="card full-width">
+    <section class="card-plain">
         <form method="post" action="">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-
-            <?php if (!empty($error)): ?>
-                <div class="status-message error">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
 
             <?php if (!empty($messages)): ?>
                 <div class="status-message success">
@@ -157,47 +155,97 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
             <?php endif; ?>
 
             <!-- Meine Wünsche -->
-            <div class="section-header">
-                <h2><?= gettext("Meine Wünsche") ?></h2>
-            </div>
-
-            <div class="list-table own-wishes-table">
-                <div class="list-header">
-                    <div class="col-id">#</div>
-                    <div class="col-title"><?= gettext("Wunsch") ?></div>
-                    <div class="col-price"><?= gettext("Preis") ?></div>
-                    <div class="col-notes"><?= gettext("Notizen") ?></div>
-                    <div class="col-qr">QR</div>
-                    <div class="col-select"><?= gettext("Auswählen") ?></div>
+            <?php foreach ($groupedOwn as $catName => $items): ?>
+                <div class="category-header">
+                    <h2>📂 <?= htmlspecialchars($catName) ?></h2>
                 </div>
+                <div class="wish-grid">
+                    <?php foreach ($items as $item): ?>
+                        <div class="wish-card <?= $item['is_purchased'] ? 'is-purchased' : '' ?>" tabindex="0">
+                            <div class="wish-card-image">
+                                🎁
+                                <?php if ($item['price'] > 0): ?>
+                                    <div class="price-badge"><?= number_format((float)$item['price'], 2, ',', '.') ?> €</div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="wish-card-body">
+                                <h3><?= htmlspecialchars($item['title']) ?></h3>
+                                <div class="wish-card-notes"><?= nl2br(htmlspecialchars($item['notes'] ?? '')) ?></div>
+                            </div>
+                            <div class="wish-card-footer">
+                                <?php if ($item['claimed']): ?>
+                                    <span class="wish-status-pill reserved">🔒 <?= translate("Reserviert") ?></span>
+                                <?php else: ?>
+                                    <span class="wish-status-pill available">✨ <?= translate("Verfügbar") ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="wish-card-actions">
+                                <a href="edit.php?editID=<?= (int)$item['item_id'] ?? (int)$item['id'] ?>" class="button"><?= translate("Bearbeiten") ?></a>
+                                <label style="border: 1px solid var(--accent-color); color: var(--accent-color);">
+                                    <input type="checkbox" name="w_selected[]" value="<?= (int)$item['id'] ?>" style="width: auto;">
+                                    <span>🗑️ <?= translate("Löschen") ?></span>
+                                </label>
+                                <button type="button" class="button button-outline" onclick="showQRCode('<?= htmlspecialchars($item['title']) ?>', '<?= (int)$item['id'] ?>')">📱 QR Code</button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
 
-                <?php if (empty($ownWishes)): ?>
-                    <div class="list-row empty">
-                        <div class="col-full"><?= gettext("Noch keine Wünsche vorhanden.") ?></div>
-                    </div>
-                <?php else: ?>
-                    <?php $x = 1; foreach ($ownWishes as $wish): ?>
-                        <div class="list-row alternating-row">
-                            <div class="col-id"><?= $x++ ?></div>
-                            <div class="col-title">
-                                <div class="item-title">
-                                    <?php if (!empty($wish['url'])): ?>
-                                        <a href="<?= htmlspecialchars($wish['url'] ?: '') ?>" target="_blank" class="link-external">
-                                            <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                        </a>
-                                    <?php else: ?>
-                                        <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="item-actions">
-                                    <a href="edit.php?editID=<?= (int)$wish['id'] ?>" class="link-edit">[<?= gettext("bearbeiten") ?>]</a>
-                                </div>
+            <?php if (!empty($groupedOwn)): ?>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="submit" name="del_wish" class="button button-danger" onclick="return confirm('Markierte Wünsche wirklich löschen?')">
+                        🗑️ <?= translate("Markierte löschen") ?>
+                    </button>
+                </div>
+            <?php endif; ?>
+        </form>
+
+        <!-- Reservierte Wünsche (von anderen) -->
+        <?php if (!empty($claimedWishes)): ?>
+            <div class="category-header" style="margin-top: 5rem; border-color: var(--accent-color);">
+                <h2>📌 <?= translate("Meine Reservierungen für andere") ?></h2>
+            </div>
+            <form method="post" action="">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                <div class="wish-grid">
+                    <?php foreach ($claimedWishes as $wish): ?>
+                        <div class="wish-card <?= $wish['is_purchased'] ? 'is-purchased' : '' ?>" tabindex="0">
+                            <div class="wish-card-image" style="background: #2c3e50;">
+                                👤
                             </div>
-                            <div class="col-price">
-                                <?= $wish['price'] ? number_format((float)$wish['price'], 2, ',', '.') . ' €' : '-' ?>
+                            <div class="wish-card-body">
+                                <h3><?= htmlspecialchars($wish['title']) ?></h3>
+                                <div style="font-size: 0.8rem; color: var(--primary-color); margin-bottom: 10px;">
+                                    Für: <strong><?= htmlspecialchars($wish['owner_name']) ?></strong>
+                                </div>
+                                <div class="wish-card-notes"><?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?></div>
                             </div>
-                            <div class="col-notes">
-                                <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
+                            <div class="wish-card-footer">
+                                <span class="wish-status-pill reserved"><?= $wish['is_purchased'] ? translate("Gekauft") : translate("Reserviert") ?></span>
+                            </div>
+                            <div class="wish-card-actions">
+                                <?php if (!empty($wish['url'])): ?>
+                                    <a href="<?= htmlspecialchars($wish['url']) ?>" target="_blank" class="button">🔗 <?= translate("Shop") ?></a>
+                                <?php endif; ?>
+                                <label>
+                                    <input type="checkbox" name="d_selected[]" value="<?= (int)$wish['id'] ?>" style="width: auto;">
+                                    <span>❌ <?= translate("Freigeben") ?></span>
+                                </label>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="submit" name="rel_claimed" class="button button-danger">
+                        ❌ <?= translate("Markierte Reservierungen stornieren") ?>
+                    </button>
+                </div>
+            </form>
+        <?php endif; ?>
+    </section>
+</main>
+
                             </div>
                             <div class="col-qr">
                                 <?php if (!empty($wish['url'])): ?>

@@ -156,25 +156,17 @@ if (empty($fullName)) $fullName = $userToView['u_name'];
         </div>
     <?php endif; ?>
 
-    <section class="card">
-        <form method="post" action="">
+    <section class="card-plain">
+        <form method="post" action="" id="claim-form">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
             
             <?php foreach ($groupedWishes as $categoryName => $catWishes): ?>
-                <div class="category-group" style="margin-bottom: 30px;">
-                    <h2 style="border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-bottom: 15px; color: var(--primary-color);">
-                        📂 <?= htmlspecialchars($categoryName) ?>
-                    </h2>
+                <div class="category-group" style="margin-bottom: 50px;">
+                    <div class="category-header">
+                        <h2>📂 <?= htmlspecialchars($categoryName) ?></h2>
+                    </div>
                     
-                    <div class="list-table">
-                        <div class="list-row list-header" style="grid-template-columns: 2fr 0.8fr 2fr 1.5fr 1fr;">
-                            <div><?= translate("Wunsch") ?></div>
-                            <div><?= translate("Preis") ?></div>
-                            <div><?= translate("Notizen") ?></div>
-                            <div><?= translate("Status") ?></div>
-                            <div style="text-align: center;">Aktion</div>
-                        </div>
-
+                    <div class="wish-grid">
                         <?php foreach ($catWishes as $wish): ?>
                             <?php 
                             $claimantId = !empty($wish['claimed']) ? (int)$wish['claimed'] : 0;
@@ -182,47 +174,77 @@ if (empty($fullName)) $fullName = $userToView['u_name'];
                             $isByMe = ($claimantId === $currentUserId);
                             $isPurchased = (int)($wish['is_purchased'] ?? 0) === 1;
                             
-                            // Status styling
+                            $statusClass = 'available';
                             $statusText = translate("Verfügbar");
-                            $statusColor = "var(--success-color)";
-                            
                             if ($isClaimed) {
                                 if ($isByMe) {
-                                    $statusText = $isPurchased ? "✅ " . translate("Gekauft") : "📌 " . translate("Von dir reserviert");
-                                    $statusColor = $isPurchased ? "var(--success-color)" : "var(--primary-color)";
+                                    $statusClass = $isPurchased ? 'purchased' : 'reserved';
+                                    $statusText = $isPurchased ? translate("Gekauft") : translate("Reserviert");
                                 } else {
-                                    $statusText = $isPurchased ? "✅ " . translate("Bereits gekauft") : "🚫 " . translate("Bereits reserviert");
-                                    $statusColor = "var(--accent-color)";
+                                    $statusClass = 'purchased';
+                                    $statusText = translate("Vergeben");
                                 }
                             }
                             ?>
-                            <div class="list-row" style="grid-template-columns: 2fr 0.8fr 2fr 1.5fr 1fr; <?= $isPurchased ? 'opacity: 0.7;' : '' ?>">
-                                <div>
-                                    <?php if (!empty($wish['url'])): ?>
-                                        <a href="<?= htmlspecialchars($wish['url']) ?>" target="_blank" style="<?= $isPurchased ? 'text-decoration: line-through;' : '' ?>"><?= htmlspecialchars($wish['title']) ?></a>
-                                    <?php else: ?>
-                                        <span style="<?= $isPurchased ? 'text-decoration: line-through;' : '' ?>"><?= htmlspecialchars($wish['title']) ?></span>
+                            <div class="wish-card <?= $isPurchased ? 'is-purchased' : '' ?>" tabindex="0">
+                                <div class="wish-card-image">
+                                    <?php if (!empty($wish['url']) && str_contains($wish['url'], 'amazon')): ?>
+                                        <img src="https://www.google.com/s2/favicons?domain=amazon.de&sz=64" alt="Amazon" style="width: 32px; height: 32px; position: absolute; top: 10px; left: 10px; opacity: 0.5;">
+                                    <?php endif; ?>
+                                    🎁
+                                    <?php if ($wish['price'] > 0): ?>
+                                        <div class="price-badge"><?= number_format((float)$wish['price'], 2, ',', '.') ?> €</div>
                                     <?php endif; ?>
                                 </div>
-                                <div><?= number_format((float)($wish['price'] ?? 0), 2, ',', '.') ?> €</div>
-                                <div style="font-size: 0.9rem; color: var(--text-muted);"><?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?></div>
-                                <div style="color: <?= $statusColor ?>; font-weight: bold; font-size: 0.85rem;">
-                                    <?= $statusText ?>
+                                
+                                <div class="wish-card-body">
+                                    <h3>
+                                        <?php if (!empty($wish['url'])): ?>
+                                            <a href="<?= htmlspecialchars($wish['url']) ?>" target="_blank" rel="noopener"><?= htmlspecialchars($wish['title']) ?></a>
+                                        <?php else: ?>
+                                            <?= htmlspecialchars($wish['title']) ?>
+                                        <?php endif; ?>
+                                    </h3>
+                                    <div class="wish-card-notes">
+                                        <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
+                                    </div>
                                 </div>
-                                <div style="text-align: center; display: flex; gap: 5px; justify-content: center;">
+
+                                <div class="wish-card-footer">
+                                    <span class="wish-status-pill <?= $statusClass ?>"><?= $statusText ?></span>
+                                    <?php if ($isClaimed && !$isByMe): ?>
+                                        <span style="color: var(--text-muted); font-size: 0.75rem;">🔒 <?= translate("Reserviert") ?></span>
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Hover Actions -->
+                                <div class="wish-card-actions">
                                     <?php if (!$isClaimed): ?>
-                                        <label title="Reservieren">
-                                            <input type="checkbox" name="claim_items[]" value="<?= (int)$wish['id'] ?>"> 📌
+                                        <label>
+                                            <input type="checkbox" name="claim_items[]" value="<?= (int)$wish['id'] ?>" style="width: auto; margin-right: 10px;">
+                                            <span>📌 <?= translate("Reservieren") ?></span>
                                         </label>
                                     <?php elseif ($isByMe): ?>
                                         <?php if (!$isPurchased): ?>
-                                            <label title="Als gekauft markieren">
-                                                <input type="checkbox" name="purchase_items[]" value="<?= (int)$wish['id'] ?>"> ✅
+                                            <label>
+                                                <input type="checkbox" name="purchase_items[]" value="<?= (int)$wish['id'] ?>" style="width: auto; margin-right: 10px;">
+                                                <span>✅ <?= translate("Gekauft") ?></span>
                                             </label>
                                         <?php endif; ?>
-                                        <label title="Stornieren">
-                                            <input type="checkbox" name="unclaim_items[]" value="<?= (int)$wish['id'] ?>"> ❌
+                                        <label>
+                                            <input type="checkbox" name="unclaim_items[]" value="<?= (int)$wish['id'] ?>" style="width: auto; margin-right: 10px;">
+                                            <span>❌ <?= translate("Stornieren") ?></span>
                                         </label>
+                                    <?php else: ?>
+                                        <div style="color: white; text-align: center; font-size: 0.9rem;">
+                                            <?= translate("Dieser Wunsch wird bereits erfüllt.") ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if (!empty($wish['url'])): ?>
+                                        <a href="<?= htmlspecialchars($wish['url']) ?>" target="_blank" class="button button-outline" style="width: 80%; margin-top: 10px;">
+                                            🔗 <?= translate("Shop öffnen") ?>
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -231,15 +253,9 @@ if (empty($fullName)) $fullName = $userToView['u_name'];
                 </div>
             <?php endforeach; ?>
 
-            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
-                <button type="submit" name="do_unclaim" class="button button-outline" style="border-color: var(--accent-color); color: var(--accent-color);">
-                    <?= translate("Markierte stornieren") ?>
-                </button>
-                <button type="submit" name="do_purchase" class="button button-success">
-                    <?= translate("Markierte als GEKAUFT markieren") ?>
-                </button>
-                <button type="submit" name="do_claim" class="button">
-                    <?= translate("Markierte reservieren") ?>
+            <div style="position: fixed; bottom: 30px; right: 30px; z-index: 1000;">
+                <button type="submit" name="do_claim" class="button button-success" style="box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 1rem 2rem; border-radius: 30px;">
+                    🚀 <?= translate("Aktionen ausführen") ?>
                 </button>
             </div>
         </form>

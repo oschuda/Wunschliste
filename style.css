@@ -261,6 +261,197 @@ footer {
     max-width: none;
 }
 
+/* --- Modern Card Design for Wishes --- */
+.wish-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.wish-card {
+    position: relative;
+    background: linear-gradient(145deg, #1e1e1e, #161616);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    min-height: 420px;
+}
+
+.wish-card:hover, .wish-card:focus-within {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 15px rgba(52, 152, 219, 0.2);
+    border-color: rgba(52, 152, 219, 0.4);
+}
+
+.wish-card.is-purchased {
+    opacity: 0.85;
+}
+
+.wish-card.is-purchased .wish-card-body {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.wish-card-image {
+    height: 180px;
+    background: #252525;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.wish-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wish-card-image .price-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.wish-card-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.wish-card-body h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.wish-card-body h3 a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.wish-card-body h3 a:hover {
+    color: var(--primary-color);
+}
+
+.wish-card-notes {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.wish-card-footer {
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.wish-status-pill {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+
+.wish-status-pill.available { background: rgba(39, 174, 96, 0.2); color: #51cf66; }
+.wish-status-pill.reserved { background: rgba(52, 152, 219, 0.2); color: #74c0fc; }
+.wish-status-pill.purchased { background: rgba(231, 76, 60, 0.2); color: #ff8787; }
+
+/* Overlay Actions */
+.wish-card-actions {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.wish-card:hover .wish-card-actions, 
+.wish-card:focus-within .wish-card-actions,
+.wish-card.show-actions .wish-card-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.wish-card-actions .button {
+    width: 80%;
+    margin-bottom: 5px;
+}
+
+.wish-card-actions label {
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    width: 80%;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.wish-card-actions label:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Category Headers */
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.category-header h2 {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 480px) {
+    .wish-grid {
+        grid-template-columns: 1fr;
+    }
+}
 /* Grid Table System */
 .list-table {
     display: grid;
