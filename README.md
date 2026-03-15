@@ -25,4 +25,7 @@ Trage deinen persönlichen API-Key aus deinem Profil in der Web-Oberfläche ein,
 
 ## ⚖️ Lizenz
 
-Dieses Projekt ist Open Source. Bitte beachte die Lizenzbedingungen im Projektordner.
+Dieses Projekt lizenziert unter der **GNU Affero General Public License v3 (AGPL-3.0)**. 
+Alle Details findest du in der [LICENSE](LICENSE) Datei.
+
+Copyright (C) 2024-2026 Erik Denzler
