@@ -179,17 +179,18 @@ unset($user); // Referenz auflösen
                                 <?php foreach ($users as $user): ?>
                                     <?php
                                     $isOwn = ((int)$user['id'] === $currentUserId);
-                                    $rowBg = $isOwn ? '#E0F7FA' : '#F0F8FF'; 
+                                    // Zeilenfarben (passend zu style.css Variablen)
+                                    $rowBg = $isOwn ? 'var(--color-bg-alt, #e8f4f8)' : 'var(--color-bg, #ffffff)'; 
                                     $linkStart = '<a href="viewperson.php?viewID=' . (int)$user['id'] . '">';
                                     $linkEnd   = '</a>';
                                     ?>
-                                    <tr bgcolor="<?= $rowBg ?>">
+                                    <tr style="background-color: <?= $rowBg ?>; color: var(--color-text);">
                                         <td><?= $linkStart . htmlspecialchars($user['l_name'] ?? '') . $linkEnd ?></td>
                                         <td><?= $linkStart . htmlspecialchars($user['f_name'] ?? '') . $linkEnd ?></td>
-                                        <td align="right"><?= htmlspecialchars($user['birthdate']) ?></td>
-                                        <td align="right"><?= $user['total_wishes'] ?></td>
-                                        <td align="right" <?= $isOwn ? 'bgcolor="#CCCCCC"' : '' ?>>
-                                            <?= $isOwn ? '' : $user['claimed_wishes'] ?>
+                                        <td align="right"><?= htmlspecialchars($user['birthdate'] ?? '') ?></td>
+                                        <td align="right"><?= (int)$user['total_wishes'] ?></td>
+                                        <td align="right" style="<?= $isOwn ? 'background-color: var(--color-bg-light, #cccccc); opacity: 0.5;' : '' ?>">
+                                            <?= $isOwn ? '—' : (int)$user['claimed_wishes'] ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

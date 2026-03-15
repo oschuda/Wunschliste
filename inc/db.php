@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 final class Database
 {
-    private const DB_PATH = __DIR__ . '/../data/wishlist.sqlite';
+    private const DB_PATH = __DIR__ . '/../data/wishlist.db';
 
     private static ?PDO $instance = null;
 

@@ -1,8 +1,8 @@
-﻿# phpWishlist - Installation & Setup
+﻿# Geschenke - Installation & Setup
 
 ## Übersicht
 
-phpWishlist ist eine selbst-gehostete Wunschlisten-Anwendung mit QR-Code-Unterstützung, entwickelt für Synology NAS und andere PHP-Umgebungen.
+Geschenke ist eine selbst-gehostete Wunschlisten-Anwendung mit QR-Code-Unterstützung, entwickelt für Synology NAS und andere PHP-Umgebungen.
 
 ## Systemanforderungen
 
@@ -171,4 +171,4 @@ Open-Source - keine kommerzielle Nutzung ohne Genehmigung.
 
 ---
 
-**phpWishlist 2026** - Selbst-gehostete Wunschlisten mit QR-Code-Unterstützung
+**Geschenke 2026** - Selbst-gehostete Wunschlisten mit QR-Code-Unterstützung
