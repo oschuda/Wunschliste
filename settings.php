@@ -7,13 +7,19 @@ if (empty($_SESSION['id'])) { header('Location: login.php'); exit; }
 $pdo = Database::get();
 $userId = (int)$_SESSION['id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $stmt = $pdo->prepare('UPDATE users SET qr_size = ?, qr_use_cache = ? WHERE id = ?');
-    $stmt->execute([(int)$_POST['qr_size'], isset($_POST['qr_use_cache']) ? 1 : 0, $userId]);
+    $stmt = $pdo->prepare('UPDATE users SET email = ?, qr_size = ?, qr_use_cache = ?, notify_claimed = ? WHERE id = ?');
+    $stmt->execute([
+        trim($_POST['email'] ?? ''),
+        (int)$_POST['qr_size'], 
+        isset($_POST['qr_use_cache']) ? 1 : 0, 
+        isset($_POST['notify_claimed']) ? 1 : 0,
+        $userId
+    ]);
     $_SESSION['lang'] = $_POST['lang'];
     header('Location: settings.php?success=1');
     exit;
 }
-$stmt = $pdo->prepare('SELECT qr_size, qr_use_cache FROM users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT email, qr_size, qr_use_cache, notify_claimed FROM users WHERE id = ?');
 $stmt->execute([$userId]);
 $userSettings = $stmt->fetch();
 ?>
@@ -51,6 +57,16 @@ $userSettings = $stmt->fetch();
                     <option value="de" <?= ($_SESSION['lang'] ?? 'de') === 'de' ? 'selected' : '' ?>>Deutsch (DE)</option>
                     <option value="en" <?= ($_SESSION['lang'] ?? 'de') === 'en' ? 'selected' : '' ?>>English (EN)</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-Mail-Adresse (für Benachrichtigungen):</label>
+                <input type="email" name="email" id="email" value="<?= htmlspecialchars($userSettings['email'] ?? '') ?>" placeholder="ihre@email.de">
+            </div>
+
+            <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+                <input type="checkbox" name="notify_claimed" id="notify_claimed" <?= ($userSettings['notify_claimed'] ?? 0) ? 'checked' : '' ?> style="width: auto;">
+                <label for="notify_claimed" style="margin-bottom: 0;">E-Mail bei reservierten Wünschen erhalten</label>
             </div>
 
             <div class="form-group">

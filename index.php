@@ -129,14 +129,30 @@ unset($user); // Referenz auflösen
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wunschliste - Übersicht</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
 </head>
 <body class="is-centered">
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
 
 <header class="main-header">
     <div class="header-content">
         <h1><?= gettext("Wunschlisten") ?></h1>
         <div class="header-actions">
             <span class="user-info"><?= gettext("Angemeldet als") ?> <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></span>
+            
+            <button onclick="copyShareUrl()" class="button button-outline" title="Link zu deiner Wunschliste kopieren">
+                🔗 Teilen
+            </button>
+            
+            <a href="settings.php" class="button button-outline" title="<?= gettext("Einstellungen") ?>">⚙️</a>
+
             <form method="post" style="display:inline-flex; gap: 5px;">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
                 <button type="submit" name="lang_de" class="button button-secondary">DE</button>
@@ -148,6 +164,19 @@ unset($user); // Referenz auflösen
                 <button type="submit" name="logout" class="button button-secondary"><?= gettext("Abmelden") ?></button>
             </form>
         </div>
+
+        <script>
+        function copyShareUrl() {
+            const baseUrl = window.location.origin + window.location.pathname.replace('index.php', '');
+            const shareUrl = baseUrl + 'viewperson.php?viewID=<?= $currentUserId ?>';
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Dein persönlicher Wunschlisten-Link wurde kopiert:\n' + shareUrl);
+            }).catch(err => {
+                alert('Kopieren fehlgeschlagen. Dein Link ist:\n' + shareUrl);
+            });
+        }
+        </script>
     </div>
 </header>
 
@@ -157,27 +186,41 @@ unset($user); // Referenz auflösen
             <?php
             $isOwn = ((int)$user['id'] === $currentUserId);
             $link = 'viewperson.php?viewID=' . (int)$user['id'];
-            $fullName = htmlspecialchars(($user['f_name'] ?? '') . ' ' . ($user['l_name'] ?? ''));
+            $firstName = $user['f_name'] ?? '';
+            $lastName = $user['l_name'] ?? '';
+            $fullName = htmlspecialchars(trim($firstName . ' ' . $lastName) ?: $user['u_name']);
+            $initial = mb_substr($firstName ?: $user['u_name'], 0, 1);
             ?>
             <a href="<?= $link ?>" class="user-card <?= $isOwn ? 'is-own' : '' ?>">
-                <h3><?= $isOwn ? '⭐ ' . translate("Mein Profil") : $fullName ?></h3>
-                <div class="user-meta">
-                    <?php if (!empty($user['birthdate'])): ?>
-                        📅 <?= htmlspecialchars($user['birthdate']) ?>
-                    <?php endif; ?>
+                <div class="user-card-header">
+                    <div class="user-avatar"><?= $isOwn ? '👤' : htmlspecialchars($initial) ?></div>
+                    <h3><?= $isOwn ? '⭐ ' . translate("Mein Profil") : $fullName ?></h3>
                 </div>
                 
-                <div class="user-stats">
-                    <div class="stat-group">
-                        <span class="stat-label"><?= gettext("Wünsche") ?>:</span>
-                        <span class="stat-value"><?= (int)$user['total_wishes'] ?></span>
+                <div class="user-card-body">
+                    <div class="user-meta">
+                        <?php if (!empty($user['b_day'])): ?>
+                            📅 <?= (int)$user['b_day'] ?>.<?= (int)$user['b_month'] ?>.<?= (int)$user['b_year'] ?>
+                        <?php else: ?>
+                            🎁 <?= gettext("Kein Geburtsdatum") ?>
+                        <?php endif; ?>
                     </div>
-                    <?php if (!$isOwn): ?>
-                    <div class="stat-group">
-                        <span class="stat-label"><?= gettext("Reserviert") ?>:</span>
-                        <span class="stat-value"><?= (int)$user['claimed_wishes'] ?></span>
+                    
+                    <div class="user-stats">
+                        <div class="stat-group">
+                            <span class="stat-label"><?= gettext("Wünsche") ?></span>
+                            <span class="stat-value"><?= (int)$user['total_wishes'] ?></span>
+                        </div>
+                        <?php if (!$isOwn): ?>
+                        <div class="stat-group">
+                            <span class="stat-label"><?= gettext("Reserviert") ?></span>
+                            <span class="stat-value"><?= (int)$user['claimed_wishes'] ?></span>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                    <?php endif; ?>
+                </div>
+                <div class="card-footer-overlay">
+                    <?= translate("Wunschliste öffnen") ?> →
                 </div>
             </a>
         <?php endforeach; ?>

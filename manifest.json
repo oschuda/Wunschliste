@@ -1,0 +1,22 @@
+﻿{
+  "name": "Wunschliste",
+  "short_name": "Wünsche",
+  "description": "Deine persönliche Wunschliste - einfach teilen und verwalten.",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#3498db",
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

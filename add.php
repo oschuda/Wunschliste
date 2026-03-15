@@ -42,20 +42,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = translate('Sicherheitsfehler: Bitte Seite neu laden und erneut versuchen.');
     } else {
         // 3. Daten einlesen
-        $title = trim($_POST['title'] ?? '');
-        $url   = trim($_POST['url']   ?? '');
-        $price = trim($_POST['price'] ?? '');
-        $notes = trim($_POST['notes'] ?? '');
+        $title    = trim($_POST['title'] ?? '');
+        $url      = trim($_POST['url']   ?? '');
+        $price    = trim($_POST['price'] ?? '');
+        $notes    = trim($_POST['notes'] ?? '');
+        $category = trim($_POST['category'] ?? 'Standard');
 
         // Preis-Formatierung
         $cleanPrice = str_replace(',', '.', $price);
         $priceFloat = (!empty($cleanPrice)) ? (float)$cleanPrice : null;
 
         $formData = [
-            'title' => $title,
-            'url'   => $url,
-            'price' => $price,
-            'notes' => $notes,
+            'title'    => $title,
+            'url'      => $url,
+            'price'    => $price,
+            'notes'    => $notes,
+            'category' => $category,
         ];
 
         // 4. Pflichtfeld-Check (Nur wenn wir speichern wollen)
@@ -75,8 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $stmt = $pdo->prepare("
                         INSERT INTO wishes 
-                        (owner, title, url, price, notes, claimed) 
-                        VALUES (?, ?, ?, ?, ?, NULL)
+                        (owner, title, url, price, notes, category, claimed) 
+                        VALUES (?, ?, ?, ?, ?, ?, NULL)
                     ");
 
                     $stmt->execute([
@@ -84,7 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $title,
                         $url ?: null,
                         $priceFloat,
-                        $notes ?: null
+                        $notes ?: null,
+                        $category ?: 'Standard'
                     ]);
 
                     header('Location: list.php');
@@ -146,9 +149,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="price"><?= translate("Preis (ca.)") ?></label>
-                    <input name="price" id="price" type="text" value="<?= htmlspecialchars($formData['price']) ?>" placeholder="0,00 €">
+                    <label for="category"><?= translate("Liste / Gruppe") ?></label>
+                    <input name="category" id="category" type="text" list="category-list" value="<?= htmlspecialchars($formData['category'] ?? 'Standard') ?>" placeholder="z.B. Geburtstag, Hochzeit...">
+                    <datalist id="category-list">
+                        <option value="Standard">
+                        <option value="Geburtstag">
+                        <option value="Weihnachten">
+                        <option value="Hochzeit">
+                        <option value="Familie">
+                    </datalist>
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="price"><?= translate("Preis (ca.)") ?></label>
+                <input name="price" id="price" type="text" value="<?= htmlspecialchars($formData['price']) ?>" placeholder="0,00 €">
             </div>
 
             <div id="fetch-loader" style="display:none; color: var(--primary-color); font-size: 0.9rem; margin-bottom: 10px;">

@@ -88,6 +88,45 @@ class UrlMetadataFetcher {
             }
         }
 
+        // Kaufland.de spezifische Logik
+        if (str_contains($url, 'kaufland.de')) {
+            $kauflandQueries = [
+                "//div[contains(@class, 'rd-price-information__price')]",
+                "//span[contains(@class, 'rd-price-information__price')]",
+                "//meta[@property='product:price:amount']/@content"
+            ];
+            foreach ($kauflandQueries as $query) {
+                $node = $xpath->query($query)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+        }
+
+        // MediaMarkt / Saturn spezifische Logik
+        if (str_contains($url, 'mediamarkt') || str_contains($url, 'saturn')) {
+            $mmQueries = [
+                "//span[@data-test='mw-price-label']",
+                "//div[contains(@class, 'price-tag-transformed')]",
+                "//meta[@property='og:price:amount']/@content"
+            ];
+            foreach ($mmQueries as $query) {
+                $node = $xpath->query($query)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+        }
+
+        // Otto.de spezifische Logik
+        if (str_contains($url, 'otto.de')) {
+            $ottoQueries = [
+                "//span[contains(@class, 'p_price__retail')]",
+                "//span[contains(@class, 'pd_price__retail')]",
+                "//meta[@itemprop='price']/@content"
+            ];
+            foreach ($ottoQueries as $query) {
+                $node = $xpath->query($query)->item(0);
+                if ($node) return trim($node->nodeValue);
+            }
+        }
+
         // Standard Metadaten
         $metaPrice = $xpath->query("//meta[@property='product:price:amount']/@content")->item(0);
         if ($metaPrice) return trim($metaPrice->nodeValue);

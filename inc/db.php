@@ -58,6 +58,7 @@ final class Database
                         role        TEXT DEFAULT 'user',
                         qr_size     INTEGER DEFAULT 3,
                         qr_use_cache INTEGER DEFAULT 1,
+                        notify_claimed INTEGER DEFAULT 1 CHECK (notify_claimed IN (0,1)),
                         created     DATETIME DEFAULT CURRENT_TIMESTAMP,
                         last_login  DATETIME
                     );
@@ -69,6 +70,8 @@ final class Database
                         url         TEXT,
                         notes       TEXT,
                         claimed     INTEGER,
+                        is_purchased INTEGER DEFAULT 0 CHECK (is_purchased IN (0,1)),
+                        category    TEXT DEFAULT 'Standard',
                         price       REAL,
                         created     DATETIME DEFAULT CURRENT_TIMESTAMP,
 
@@ -77,6 +80,32 @@ final class Database
                     );
 SQL
                 );
+
+                // Migration: Spalten 'is_purchased' und 'category' nachträglich hinzufügen, falls sie fehlen
+                try {
+                    self::$instance->query("SELECT is_purchased FROM wishes LIMIT 1");
+                } catch (PDOException) {
+                    self::$instance->exec("ALTER TABLE wishes ADD COLUMN is_purchased INTEGER DEFAULT 0 CHECK (is_purchased IN (0,1))");
+                }
+
+                try {
+                    self::$instance->query("SELECT category FROM wishes LIMIT 1");
+                } catch (PDOException) {
+                    self::$instance->exec("ALTER TABLE wishes ADD COLUMN category TEXT DEFAULT 'Standard'");
+                }
+
+                // Migration: Spalten 'email' und 'notify_claimed' für users nachträglich hinzufügen
+                try {
+                    self::$instance->query("SELECT email FROM users LIMIT 1");
+                } catch (PDOException) {
+                    self::$instance->exec("ALTER TABLE users ADD COLUMN email TEXT");
+                }
+
+                try {
+                    self::$instance->query("SELECT notify_claimed FROM users LIMIT 1");
+                } catch (PDOException) {
+                    self::$instance->exec("ALTER TABLE users ADD COLUMN notify_claimed INTEGER DEFAULT 1 CHECK (notify_claimed IN (0,1))");
+                }
 
             } catch (PDOException $e) {
                 // Bei Fehlern Details für Admin ausgeben (nur für Debugging!)
