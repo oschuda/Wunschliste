@@ -45,7 +45,7 @@ function isValidCsrf(): bool {
 // --------------------------------------------------
 $pdo = Database::get();
 
-$stmt = $pdo->prepare("SELECT * FROM app_users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$currentUserId]);
 $user = $stmt->fetch();
 
@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     }
                     $params[] = $currentUserId;
                     
-                    $stmt = $pdo->prepare("UPDATE app_users SET " . implode(", ", $setClause) . " WHERE id = ?");
+                    $stmt = $pdo->prepare("UPDATE users SET " . implode(", ", $setClause) . " WHERE id = ?");
                     $stmt->execute($params);
 
                     $messages[] = translate("save_success") ?: "Daten erfolgreich aktualisiert.";

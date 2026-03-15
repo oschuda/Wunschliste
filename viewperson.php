@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
         $count = 0;
         foreach ($_POST['claim_items'] as $wishId) {
             $wishId = (int)$wishId;
-            $stmt = $pdo->prepare("UPDATE app_items SET claimed = ? WHERE id = ? AND claimed IS NULL AND owner = ?");
+            $stmt = $pdo->prepare("UPDATE wishes SET claimed = ? WHERE id = ? AND claimed IS NULL AND owner = ?");
             $stmt->execute([$currentUserId, $wishId, $viewID]);
             if ($stmt->rowCount() > 0) $count++;
         }
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
         $count = 0;
         foreach ($_POST['unclaim_items'] as $wishId) {
             $wishId = (int)$wishId;
-            $stmt = $pdo->prepare("UPDATE app_items SET claimed = NULL WHERE id = ? AND claimed = ? AND owner = ?");
+            $stmt = $pdo->prepare("UPDATE wishes SET claimed = NULL WHERE id = ? AND claimed = ? AND owner = ?");
             $stmt->execute([$wishId, $currentUserId, $viewID]);
             if ($stmt->rowCount() > 0) $count++;
         }
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
 // --------------------------------------------------
 // Personendaten laden
 // --------------------------------------------------
-$stmt = $pdo->prepare("SELECT f_name, l_name, u_name FROM app_users WHERE id = ? AND enabled = 1");
+$stmt = $pdo->prepare("SELECT f_name, l_name, u_name FROM users WHERE id = ? AND enabled = 1");
 $stmt->execute([$viewID]);
 $userToView = $stmt->fetch();
 
@@ -74,7 +74,7 @@ if (!$userToView) {
 // --------------------------------------------------
 $stmt = $pdo->prepare("
     SELECT id, title, url, price, notes, claimed 
-    FROM app_items 
+    FROM wishes 
     WHERE owner = ? 
     ORDER BY id DESC
 ");

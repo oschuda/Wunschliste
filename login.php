@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             try {
                 $pdo = Database::get();
 
-                $stmt = $pdo->prepare("SELECT id, u_name, p_word, enabled, role FROM app_users WHERE u_name = ?");
+                $stmt = $pdo->prepare("SELECT id, u_name, p_word, enabled, role FROM users WHERE u_name = ?");
                 $stmt->execute([$username]);
                 $user = $stmt->fetch();
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     // Passwort NICHT in Session speichern!
 
                     // Optional: last_login updaten
-                    $pdo->prepare("UPDATE app_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?")
+                    $pdo->prepare("UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?")
                         ->execute([$user['id']]);
 
                     // Admin weiterleiten

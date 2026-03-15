@@ -96,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isValidCsrf()) {
         error_log("tog_enable Button gedrückt mit " . count($_POST['u_selected']) . " ausgewählten Benutzern");
         foreach ($_POST['u_selected'] as $userId) {
             $userId = (int)$userId;
-            $stmt = $pdo->prepare("SELECT enabled, u_name FROM app_users WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT enabled, u_name FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $row = $stmt->fetch();
 
             if ($row) {
                 $newEnabled = $row['enabled'] ? 0 : 1;
-                $pdo->prepare("UPDATE app_users SET enabled = ? WHERE id = ?")
+                $pdo->prepare("UPDATE users SET enabled = ? WHERE id = ?")
                     ->execute([$newEnabled, $userId]);
 
                 // E-Mail-Benachrichtigung
@@ -128,12 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isValidCsrf()) {
         if (in_array($newRole, ['user', 'moderator', 'admin'])) {
             foreach ($_POST['u_selected'] as $userId) {
                 $userId = (int)$userId;
-                $stmt = $pdo->prepare("SELECT u_name FROM app_users WHERE id = ?");
+                $stmt = $pdo->prepare("SELECT u_name FROM users WHERE id = ?");
                 $stmt->execute([$userId]);
                 $row = $stmt->fetch();
 
                 if ($row) {
-                    $pdo->prepare("UPDATE app_users SET role = ? WHERE id = ?")
+                    $pdo->prepare("UPDATE users SET role = ? WHERE id = ?")
                         ->execute([$newRole, $userId]);
 
                     // E-Mail-Benachrichtigung
@@ -165,12 +165,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isValidCsrf()) {
         
         foreach ($_POST['u_selected'] as $userId) {
             $userId = (int)$userId;
-            $stmt = $pdo->prepare("SELECT u_name FROM app_users WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT u_name FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $row = $stmt->fetch();
 
             if ($row) {
-                $pdo->prepare("UPDATE app_users SET p_word = ? WHERE id = ?")
+                $pdo->prepare("UPDATE users SET p_word = ? WHERE id = ?")
                     ->execute([$hashedPassword, $userId]);
 
                 // E-Mail-Benachrichtigung
@@ -193,18 +193,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isValidCsrf()) {
             $userId = (int)$userId;
 
             // Benutzername f�r Logging abrufen
-            $stmt = $pdo->prepare("SELECT u_name FROM app_users WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT u_name FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $userRow = $stmt->fetch();
 
             $pdo->beginTransaction();
             try {
                 // Account l�schen
-                $pdo->prepare("DELETE FROM app_users WHERE id = ?")->execute([$userId]);
+                $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$userId]);
                 // Alle W�nsche des Users löschen
-                $pdo->prepare("DELETE FROM app_items WHERE owner = ?")->execute([$userId]);
+                $pdo->prepare("DELETE FROM wishes WHERE owner = ?")->execute([$userId]);
                 // Claims freigeben
-                $pdo->prepare("UPDATE app_items SET claimed = NULL WHERE claimed = ?")->execute([$userId]);
+                $pdo->prepare("UPDATE wishes SET claimed = NULL WHERE claimed = ?")->execute([$userId]);
                 $pdo->commit();
 
                 // Logging
@@ -222,10 +222,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isValidCsrf()) {
     if (isset($_POST['delete_wish']) && !empty($_POST['w_selected'])) {
         foreach ($_POST['w_selected'] as $wishId) {
             $wishId = (int)$wishId;
-            $stmt = $pdo->prepare("SELECT title FROM app_items WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT title FROM wishes WHERE id = ?");
             $stmt->execute([$wishId]);
             $wish = $stmt->fetch();
-            $pdo->prepare("DELETE FROM app_items WHERE id = ?")->execute([$wishId]);
+            $pdo->prepare("DELETE FROM wishes WHERE id = ?")->execute([$wishId]);
             if ($wish) {
                 logAdminAction('Wish deleted', "Wish: {$wish['title']} (ID: $wishId)");
             }
@@ -237,10 +237,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isValidCsrf()) {
     if (isset($_POST['unclaim']) && !empty($_POST['w_selected'])) {
         foreach ($_POST['w_selected'] as $wishId) {
             $wishId = (int)$wishId;
-            $stmt = $pdo->prepare("SELECT title FROM app_items WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT title FROM wishes WHERE id = ?");
             $stmt->execute([$wishId]);
             $wish = $stmt->fetch();
-            $pdo->prepare("UPDATE app_items SET claimed = NULL WHERE id = ?")->execute([$wishId]);
+            $pdo->prepare("UPDATE wishes SET claimed = NULL WHERE id = ?")->execute([$wishId]);
             if ($wish) {
                 logAdminAction('Wish unclaimed', "Wish: {$wish['title']} (ID: $wishId)");
             }
@@ -268,7 +268,7 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $perPage;
 
 // Gesamtanzahl der Benutzer (mit Suche)
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM app_users $searchCondition");
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM users $searchCondition");
 $stmt->execute($params);
 $totalUsers = $stmt->fetchColumn();
 $totalPages = ceil($totalUsers / $perPage);
@@ -278,7 +278,7 @@ $totalPages = ceil($totalUsers / $perPage);
 // --------------------------------------------------
 $stmt = $pdo->prepare("
     SELECT id, u_name, f_name, l_name, b_day, b_month, b_year, enabled, role
-    FROM app_users
+    FROM users
     $searchCondition
     ORDER BY $sort_column $sort_direction
     LIMIT ? OFFSET ?
@@ -293,9 +293,9 @@ $users = $stmt->fetchAll();
 // --------------------------------------------------
 $stmt = $pdo->prepare("
     SELECT w.id, w.title, w.owner, w.claimed, a.u_name AS owner_name, c.u_name AS claimed_name
-    FROM app_items w
-    LEFT JOIN app_users a ON w.owner = a.id
-    LEFT JOIN app_users c ON w.claimed = c.id
+    FROM wishes w
+    LEFT JOIN users a ON w.owner = a.id
+    LEFT JOIN users c ON w.claimed = c.id
     ORDER BY w.id DESC
 ");
 $stmt->execute();

@@ -37,7 +37,7 @@ final class Database
 
                 // Tabellen einmalig anlegen (Idempotent)
                 self::$instance->exec(<<<SQL
-                    CREATE TABLE IF NOT EXISTS app_users (
+                    CREATE TABLE IF NOT EXISTS users (
                         id          INTEGER PRIMARY KEY AUTOINCREMENT,
                         f_name      TEXT,
                         l_name      TEXT,
@@ -62,7 +62,7 @@ final class Database
                         last_login  DATETIME
                     );
 
-                    CREATE TABLE IF NOT EXISTS app_items (
+                    CREATE TABLE IF NOT EXISTS wishes (
                         id          INTEGER PRIMARY KEY AUTOINCREMENT,
                         owner       INTEGER NOT NULL,
                         title       TEXT NOT NULL,
@@ -72,8 +72,8 @@ final class Database
                         price       REAL,
                         created     DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-                        FOREIGN KEY (owner)  REFERENCES app_users(id) ON DELETE CASCADE,
-                        FOREIGN KEY (claimed) REFERENCES app_users(id) ON DELETE SET NULL
+                        FOREIGN KEY (owner)  REFERENCES users(id) ON DELETE CASCADE,
+                        FOREIGN KEY (claimed) REFERENCES users(id) ON DELETE SET NULL
                     );
 SQL
                 );
@@ -104,7 +104,7 @@ SQL
 
 /**
  * Hilfsfunktion f�r schnelle Queries (optional � empfohlen: Prepared Statements nutzen)
- * Beispiel: Database::query("SELECT * FROM app_users WHERE id = ?", [$id]);
+ * Beispiel: Database::query("SELECT * FROM users WHERE id = ?", [$id]);
  */
 function db_query(string $sql, array $params = []): PDOStatement
 {

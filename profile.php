@@ -9,12 +9,12 @@ require_once "inc/common.php";
 require_once "inc/db.php";
 if (empty($_SESSION["id"])) { header("Location: login.php"); exit; }
 $pdo = Database::get();
-$user = $pdo->prepare("SELECT u_name, api_key FROM app_users WHERE id = ?");
+$user = $pdo->prepare("SELECT u_name, api_key FROM users WHERE id = ?");
 $user->execute([$_SESSION["id"]]);
 $userData = $user->fetch();
 if (!$userData["api_key"]) {
     $newKey = bin2hex(random_bytes(16));
-    $pdo->prepare("UPDATE app_users SET api_key = ? WHERE id = ?")->execute([$newKey, $_SESSION["id"]]);
+    $pdo->prepare("UPDATE users SET api_key = ? WHERE id = ?")->execute([$newKey, $_SESSION["id"]]);
     $userData["api_key"] = $newKey;
 }
 ?>

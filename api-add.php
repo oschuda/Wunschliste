@@ -15,7 +15,7 @@ $h = function_exists("getallheaders") ? getallheaders() : [];
 $k = $_SERVER["HTTP_X_WISHLIST_KEY"] ?? $h["X-Wishlist-Key"] ?? $h["x-wishlist-key"] ?? "";
 if (!empty($k)) {
     $pdo = Database::get();
-    $stmt = $pdo->prepare("SELECT id FROM app_users WHERE api_key = ?");
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE api_key = ?");
     $stmt->execute([$k]);
     $authId = $stmt->fetchColumn() ?: null;
 }
@@ -27,7 +27,7 @@ if (!$authId) { http_response_code(401); echo json_encode(["error" => "No Auth"]
 $input = json_decode(file_get_contents("php://input"), true);
 try {
     $pdo = Database::get();
-    $stmt = $pdo->prepare("INSERT INTO app_items (owner, title, url, notes, price, created) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)");
+    $stmt = $pdo->prepare("INSERT INTO wishes (owner, title, url, notes, price, created) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)");
     $stmt->execute([
         $authId,
         $input["title"] ?? "Unknown",

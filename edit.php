@@ -17,7 +17,7 @@ function isValidCsrf(): bool { $token = $_POST["csrf_token"] ?? ""; return hash_
 $wishId = filter_input(INPUT_GET, "editID", FILTER_VALIDATE_INT);
 if ($wishId === false || $wishId <= 0) { header("Location: list.php"); exit; }
 $pdo = Database::get();
-$stmt = $pdo->prepare("SELECT id, title, url, notes, price FROM app_items WHERE id = ? AND owner = ?");
+$stmt = $pdo->prepare("SELECT id, title, url, notes, price FROM wishes WHERE id = ? AND owner = ?");
 $stmt->execute([$wishId, $currentUserId]);
 $wish = $stmt->fetch();
 if (!$wish) { header("Location: list.php"); exit; }
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (empty($title)) { $errors[] = "Bitte Beschreibung eingeben."; }
         if (empty($errors)) {
             try {
-                $stmt = $pdo->prepare("UPDATE app_items SET title = ?, url = ?, notes = ?, price = ? WHERE id = ? AND owner = ?");
+                $stmt = $pdo->prepare("UPDATE wishes SET title = ?, url = ?, notes = ?, price = ? WHERE id = ? AND owner = ?");
                 $stmt->execute([$title, $url ?: null, $notes ?: null, $price, $wishId, $currentUserId]);
                 header("Location: list.php"); exit;
             } catch (PDOException $e) { $errors[] = "Datenbankfehler."; }

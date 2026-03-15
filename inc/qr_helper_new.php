@@ -33,7 +33,7 @@ function getUserQRSettings($userId) {
     require_once __DIR__ . '/db.php';
     $pdo = Database::get();
 
-    $stmt = $pdo->prepare("SELECT qr_settings FROM app_users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT qr_settings FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $result = $stmt->fetch();
 
@@ -52,7 +52,7 @@ function saveUserQRSettings($userId, $settings) {
     $pdo = Database::get();
 
     $jsonSettings = json_encode($settings);
-    $stmt = $pdo->prepare("UPDATE app_users SET qr_settings = ? WHERE id = ?");
+    $stmt = $pdo->prepare("UPDATE users SET qr_settings = ? WHERE id = ?");
     return $stmt->execute([$jsonSettings, $userId]);
 }
 

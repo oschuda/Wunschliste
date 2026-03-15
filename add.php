@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     $stmt = $pdo->prepare("
-                        INSERT INTO app_items 
+                        INSERT INTO wishes 
                         (owner, title, url, price, notes, claimed) 
                         VALUES (?, ?, ?, ?, ?, NULL)
                     ");
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1><?= translate("Wunsch hinzufügen") ?></h1>
     </div>
     <nav class="header-right">
-        <form method="post" action="add-wish.php" style="display:inline;">
+        <form method="post" action="add.php" style="display:inline;">
              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
              <button type="submit" name="back" class="button"><?= translate("Zurück") ?></button>
         </form>
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="container">
     <section class="card">
-        <form method="post" action="add-wish.php">
+        <form method="post" action="add.php">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
             
             <?php if ($errors): ?>

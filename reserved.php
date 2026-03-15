@@ -33,8 +33,8 @@ $stmt = $pdo->prepare("
     SELECT 
         w.id, w.title, w.url, w.notes,
         a.f_name AS owner_name
-    FROM app_items w
-    JOIN app_users a ON w.owner = a.id
+    FROM wishes w
+    JOIN users a ON w.owner = a.id
     WHERE w.claimed = ?
     ORDER BY w.id DESC
 ");

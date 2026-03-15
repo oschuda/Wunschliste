@@ -46,7 +46,7 @@ if (empty($_SESSION["id"])) { header("Location: login.php"); exit; }
         const API_KEY = "<?php
         try {
             $db = Database::get();
-            $stmt = $db->prepare("SELECT api_key FROM app_users WHERE id = ?");
+            $stmt = $db->prepare("SELECT api_key FROM users WHERE id = ?");
             $stmt->execute([$_SESSION["id"]]);
             $u = $stmt->fetch(PDO::FETCH_ASSOC);
             echo htmlspecialchars($u["api_key"] ?? "Profil �ffnen!");

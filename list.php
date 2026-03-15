@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
 
     // Wunsch hinzufügen
     if (isset($_POST['add_wish'])) {
-        header('Location: add-wish.php');
+        header('Location: add.php');
         exit;
     }
 
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
         $deleted = 0;
         foreach ($_POST['w_selected'] as $wishId) {
             $wishId = (int)$wishId;
-            $stmt = $pdo->prepare("DELETE FROM app_items WHERE id = ? AND owner = ?");
+            $stmt = $pdo->prepare("DELETE FROM wishes WHERE id = ? AND owner = ?");
             $stmt->execute([$wishId, $currentUserId]);
             if ($stmt->rowCount() > 0) $deleted++;
         }
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
         $unstored = 0;
         foreach ($_POST['d_selected'] as $wishId) {
             $wishId = (int)$wishId;
-            $stmt = $pdo->prepare("UPDATE app_items SET claimed = NULL WHERE id = ? AND claimed = ?");
+            $stmt = $pdo->prepare("UPDATE wishes SET claimed = NULL WHERE id = ? AND claimed = ?");
             $stmt->execute([$wishId, $currentUserId]);
             if ($stmt->rowCount() > 0) $unstored++;
         }
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validate_csrf_token($_POST['csrf_to
 $pdo = Database::get();
 $ownWishesStmt = $pdo->prepare("
     SELECT id, title, url, price, notes
-    FROM app_items 
+    FROM wishes 
     WHERE owner = ?
     ORDER BY id DESC
 ");
@@ -107,8 +107,8 @@ $claimedWishesStmt = $pdo->prepare("
     SELECT 
         w.id, w.title, w.url, w.price, w.notes, 
         a.f_name AS owner_name
-    FROM app_items w
-    JOIN app_users a ON w.owner = a.id
+    FROM wishes w
+    JOIN users a ON w.owner = a.id
     WHERE w.claimed = ?
     ORDER BY w.id DESC
 ");
@@ -190,7 +190,7 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
                                     <?php endif; ?>
                                 </div>
                                 <div class="item-actions">
-                                    <a href="edit-wish.php?editID=<?= (int)$wish['id'] ?>" class="link-edit">[<?= gettext("bearbeiten") ?>]</a>
+                                    <a href="edit.php?editID=<?= (int)$wish['id'] ?>" class="link-edit">[<?= gettext("bearbeiten") ?>]</a>
                                 </div>
                             </div>
                             <div class="col-price">

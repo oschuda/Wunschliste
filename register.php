@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $pdo = Database::get();
 
                     // Username bereits vergeben?
-                    $stmt = $pdo->prepare("SELECT 1 FROM app_users WHERE u_name = ?");
+                    $stmt = $pdo->prepare("SELECT 1 FROM users WHERE u_name = ?");
                     $stmt->execute([$u_name]);
                     if ($stmt->fetch()) {
                         $errors[] = translate('username_taken');
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $hashed_password = password_hash($p_word, PASSWORD_DEFAULT);
 
                         $stmt = $pdo->prepare("
-                            INSERT INTO app_users (
+                            INSERT INTO users (
                                 f_name, l_name, u_name, p_word, enabled, s_details,
                                 b_day, b_month, b_year, p_address, suburb, state,
                                 postcode, country, email, phone, role

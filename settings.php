@@ -7,13 +7,13 @@ if (empty($_SESSION['id'])) { header('Location: login.php'); exit; }
 $pdo = Database::get();
 $userId = (int)$_SESSION['id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $stmt = $pdo->prepare('UPDATE app_users SET qr_size = ?, qr_use_cache = ? WHERE id = ?');
+    $stmt = $pdo->prepare('UPDATE users SET qr_size = ?, qr_use_cache = ? WHERE id = ?');
     $stmt->execute([(int)$_POST['qr_size'], isset($_POST['qr_use_cache']) ? 1 : 0, $userId]);
     $_SESSION['lang'] = $_POST['lang'];
     header('Location: settings.php?success=1');
     exit;
 }
-$stmt = $pdo->prepare('SELECT qr_size, qr_use_cache FROM app_users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT qr_size, qr_use_cache FROM users WHERE id = ?');
 $stmt->execute([$userId]);
 $userSettings = $stmt->fetch();
 ?>

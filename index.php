@@ -87,7 +87,7 @@ $stmt = $pdo->prepare("
     SELECT 
         id, f_name, l_name, u_name, 
         b_day, b_month, b_year
-    FROM app_users 
+    FROM users 
     WHERE enabled = 1 
     ORDER BY $sort_column
 ");
@@ -100,13 +100,13 @@ foreach ($users as &$user) {
     $id = (int)$user['id'];
 
     // Gesamt Wünsche
-    $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM app_items WHERE owner = ?");
+    $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM wishes WHERE owner = ?");
     $stmt->execute([$id]);
     $user['total_wishes'] = (int)$stmt->fetchColumn();
 
     // Reservierte Wünsche (nur für andere sichtbar)
     if ($id !== $currentUserId) {
-        $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM app_items WHERE owner = ? AND claimed IS NOT NULL");
+        $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM wishes WHERE owner = ? AND claimed IS NOT NULL");
         $stmt->execute([$id]);
         $user['claimed_wishes'] = (int)$stmt->fetchColumn();
     } else {

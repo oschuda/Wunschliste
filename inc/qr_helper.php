@@ -13,7 +13,7 @@ if (!function_exists("getUserQRSettings")) {
 function getUserQRSettings($userId) {
     require_once __DIR__ . "/db.php";
     $pdo = Database::get();
-    $stmt = $pdo->prepare("SELECT qr_size, qr_use_cache FROM app_users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT qr_size, qr_use_cache FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $result = $stmt->fetch();
     
