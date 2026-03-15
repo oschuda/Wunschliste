@@ -152,33 +152,36 @@ unset($user); // Referenz auflösen
 </header>
 
 <main class="container">
-    <section class="card full-width">
-        <div class="list-table">
-            <header class="list-header">
-                <div class="col-lname"><?= gettext("Nachname") ?></div>
-                <div class="col-fname"><?= gettext("Vorname") ?></div>
-                <div class="col-bday text-right"><?= gettext("Geburtstag") ?></div>
-                <div class="col-twishes text-right"><?= gettext("Wünsche gesamt") ?></div>
-                <div class="col-cwishes text-right"><?= gettext("Reservierte Wünsche") ?></div>
-            </header>
-
-            <?php foreach ($users as $user): ?>
-                <?php
-                $isOwn = ((int)$user['id'] === $currentUserId);
-                $link = 'viewperson.php?viewID=' . (int)$user['id'];
-                ?>
-                <div class="list-row alternating-row" style="<?= $isOwn ? 'border: 1px solid var(--primary-color);' : '' ?>">
-                    <div class="col-lname"><a href="<?= $link ?>"><?= htmlspecialchars($user['l_name'] ?? '') ?></a></div>
-                    <div class="col-fname"><a href="<?= $link ?>"><?= htmlspecialchars($user['f_name'] ?? '') ?></a></div>
-                    <div class="col-bday text-right"><?= htmlspecialchars($user['birthdate'] ?? '') ?></div>
-                    <div class="col-twishes text-right"><?= (int)$user['total_wishes'] ?></div>
-                    <div class="col-cwishes text-right">
-                        <?= $isOwn ? '—' : (int)$user['claimed_wishes'] ?>
-                    </div>
+    <div class="user-grid">
+        <?php foreach ($users as $user): ?>
+            <?php
+            $isOwn = ((int)$user['id'] === $currentUserId);
+            $link = 'viewperson.php?viewID=' . (int)$user['id'];
+            $fullName = htmlspecialchars(($user['f_name'] ?? '') . ' ' . ($user['l_name'] ?? ''));
+            ?>
+            <a href="<?= $link ?>" class="user-card <?= $isOwn ? 'is-own' : '' ?>">
+                <h3><?= $isOwn ? '⭐ ' . translate("Mein Profil") : $fullName ?></h3>
+                <div class="user-meta">
+                    <?php if (!empty($user['birthdate'])): ?>
+                        📅 <?= htmlspecialchars($user['birthdate']) ?>
+                    <?php endif; ?>
                 </div>
-            <?php endforeach; ?>
-        </div>
-    </section>
+                
+                <div class="user-stats">
+                    <div class="stat-group">
+                        <span class="stat-label"><?= gettext("Wünsche") ?>:</span>
+                        <span class="stat-value"><?= (int)$user['total_wishes'] ?></span>
+                    </div>
+                    <?php if (!$isOwn): ?>
+                    <div class="stat-group">
+                        <span class="stat-label"><?= gettext("Reserviert") ?>:</span>
+                        <span class="stat-value"><?= (int)$user['claimed_wishes'] ?></span>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </a>
+        <?php endforeach; ?>
+    </div>
 
     <div class="button-group align-center mt-20">
         <form method="post" style="display: flex; gap: 10px; width: 100%; justify-content: center;">
