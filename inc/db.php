@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 final class Database
 {
-    private const DB_PATH = __DIR__ . '/../data/wishlist.db';
+    private const DB_PATH = __DIR__ . '/../data/wishlist.sqlite';
 
     private static ?PDO $instance = null;
 
@@ -79,10 +79,10 @@ SQL
                 );
 
             } catch (PDOException $e) {
-                // In Produktion: Loggen statt ausgeben!
-                // z. B. error_log($e->getMessage());
+                // Bei Fehlern Details für Admin ausgeben (nur für Debugging!)
+                error_log("Database Error: " . $e->getMessage());
                 http_response_code(500);
-                die('Datenbankverbindung fehlgeschlagen. Bitte Administrator kontaktieren.');
+                die('Datenbankverbindung fehlgeschlagen: ' . htmlspecialchars($e->getMessage()));
             }
         }
 
