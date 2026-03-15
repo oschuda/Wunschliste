@@ -130,34 +130,36 @@ unset($user); // Referenz auflösen
     <title>Wunschliste - Übersicht</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="is-centered">
 
-<header>
-    <div>
+<header class="main-header">
+    <div class="header-content">
         <h1><?= gettext("Wunschlisten") ?></h1>
-        <small><?= gettext("Angemeldet als") ?> <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></small>
+        <div class="header-actions">
+            <span class="user-info"><?= gettext("Angemeldet als") ?> <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></span>
+            <form method="post" style="display:inline-flex; gap: 5px;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                <button type="submit" name="lang_de" class="button button-secondary">DE</button>
+                <button type="submit" name="lang_en" class="button button-secondary">EN</button>
+                <?php if (!empty($_SESSION['admin'])): ?>
+                    <a href="admin.php" class="button button-danger">Admin</a>
+                <?php endif; ?>
+                <a href="tools.php" class="button button-success">🚀 Shop-Addon</a>
+                <button type="submit" name="logout" class="button button-secondary"><?= gettext("Abmelden") ?></button>
+            </form>
+        </div>
     </div>
-    <form method="post" style="flex-direction: row; align-items: center;">
-        <button type="submit" name="lang_de" class="btn btn-secondary">DE</button>
-        <button type="submit" name="lang_en" class="btn btn-secondary">EN</button>
-        <?php if (!empty($_SESSION['admin'])): ?>
-            <a href="admin.php" class="btn btn-danger">Admin</a>
-        <?php endif; ?>
-        <a href="tools.php" class="btn" style="background: var(--success-color);">🚀 Shop-Addon</a>
-        <button type="submit" name="logout" class="btn btn-secondary"><?= gettext("Abmelden") ?></button>
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-    </form>
 </header>
 
-<main>
-    <section class="card">
+<main class="container">
+    <section class="card full-width">
         <div class="list-table">
-            <header class="list-row list-header">
-                <div><?= gettext("Nachname") ?></div>
-                <div><?= gettext("Vorname") ?></div>
-                <div class="text-right"><?= gettext("Geburtstag") ?></div>
-                <div class="text-right"><?= gettext("Wünsche gesamt") ?></div>
-                <div class="text-right"><?= gettext("Reservierte Wünsche") ?></div>
+            <header class="list-header">
+                <div class="col-lname"><?= gettext("Nachname") ?></div>
+                <div class="col-fname"><?= gettext("Vorname") ?></div>
+                <div class="col-bday text-right"><?= gettext("Geburtstag") ?></div>
+                <div class="col-twishes text-right"><?= gettext("Wünsche gesamt") ?></div>
+                <div class="col-cwishes text-right"><?= gettext("Reservierte Wünsche") ?></div>
             </header>
 
             <?php foreach ($users as $user): ?>
@@ -165,26 +167,30 @@ unset($user); // Referenz auflösen
                 $isOwn = ((int)$user['id'] === $currentUserId);
                 $link = 'viewperson.php?viewID=' . (int)$user['id'];
                 ?>
-                <div class="list-row" style="<?= $isOwn ? 'border: 2px solid var(--primary-color);' : '' ?>">
-                    <div><a href="<?= $link ?>"><?= htmlspecialchars($user['l_name'] ?? '') ?></a></div>
-                    <div><a href="<?= $link ?>"><?= htmlspecialchars($user['f_name'] ?? '') ?></a></div>
-                    <div class="text-right"><?= htmlspecialchars($user['birthdate'] ?? '') ?></div>
-                    <div class="text-right"><?= (int)$user['total_wishes'] ?></div>
-                    <div class="text-right">
+                <div class="list-row alternating-row" style="<?= $isOwn ? 'border: 1px solid var(--primary-color);' : '' ?>">
+                    <div class="col-lname"><a href="<?= $link ?>"><?= htmlspecialchars($user['l_name'] ?? '') ?></a></div>
+                    <div class="col-fname"><a href="<?= $link ?>"><?= htmlspecialchars($user['f_name'] ?? '') ?></a></div>
+                    <div class="col-bday text-right"><?= htmlspecialchars($user['birthdate'] ?? '') ?></div>
+                    <div class="col-twishes text-right"><?= (int)$user['total_wishes'] ?></div>
+                    <div class="col-cwishes text-right">
                         <?= $isOwn ? '—' : (int)$user['claimed_wishes'] ?>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
     </section>
+
+    <div class="button-group align-center mt-20">
+        <form method="post" style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+            <button type="submit" name="edit_wishes" class="button"><?= gettext("Meine Wünsche bearbeiten") ?></button>
+            <button type="submit" name="edit_details" class="button"><?= gettext("Mein Profil bearbeiten") ?></button>
+        </form>
+    </div>
 </main>
 
-<footer>
-    <form method="post" style="flex-direction: row; width: 100%; justify-content: space-between;">
-        <button type="submit" name="edit_wishes" class="btn"><?= gettext("Wünsche bearbeiten") ?></button>
-        <button type="submit" name="edit_details" class="btn"><?= gettext("Details bearbeiten") ?></button>
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-    </form>
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= gettext("Wunschliste") ?></div>
 </footer>
 
 </body>

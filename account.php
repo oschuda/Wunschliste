@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $country     = trim($_POST["country"] ?? "");
         $email       = trim($_POST["email"] ?? "");
         $phone       = trim($_POST["phone"] ?? "");
-        $s_details   = isset($_POST["s_details"]) ? 1 : 0;
+        $s_details   = (isset($_POST["s_details"]) && $_POST["s_details"] === "1") ? 1 : 0;
         $password    = $_POST["password"] ?? "";
 
         if (empty($f_name) || empty($l_name)) {
@@ -111,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (strlen($password) < 6) {
                         $errors[] = translate("password_too_short");
                     } else {
-                        $updateFields["password"] = password_hash($password, PASSWORD_DEFAULT);
+                        $updateFields["p_word"] = password_hash($password, PASSWORD_DEFAULT);
                     }
                 }
 
@@ -147,97 +147,100 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
 
-<div class="main-container">
-    <div class="header-nav">
-        <form method="POST" style="display:inline;">
-            <button type="submit" name="back" class="button">« <?= translate("Zurück") ?></button>
-        </form>
+<header class="main-header">
+    <div class="header-left">
+        <h1><?= translate("Details bearbeiten") ?></h1>
     </div>
+    <nav class="header-right">
+        <form method="POST" style="display:inline;">
+            <button type="submit" name="back" class="button"><?= translate("Zurück") ?></button>
+        </form>
+    </nav>
+</header>
 
-    <h1><?= translate("Details bearbeiten") ?></h1>
-
+<main class="container">
     <?php if ($errors): ?>
-        <div class="error-box">
+        <div style="color: #e74c3c; font-weight: bold; padding: 1rem; background: rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; border-radius: 8px; margin-bottom: 1.5rem;">
             <?= implode("<br>", array_map("htmlspecialchars", $errors)) ?>
         </div>
     <?php endif; ?>
 
     <?php if ($messages): ?>
-        <div class="success-box">
+        <div style="padding:10px; background: rgba(39, 174, 96, 0.1); border: 1px solid var(--success-color); color: var(--success-color); border-radius: 8px; margin-bottom: 20px;">
             <?= implode("<br>", array_map("htmlspecialchars", $messages)) ?>
         </div>
     <?php endif; ?>
 
-    <form method="POST" class="details-form">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+    <section class="card">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
 
-        <section class="form-section">
-            <h2><?= translate("Persönliche Daten") ?></h2>
-            <div class="form-group">
-                <label><?= translate("Vorname") ?> *</label>
-                <input type="text" name="f_name" value="<?= htmlspecialchars($user["f_name"] ?? "") ?>" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label><?= translate("Vorname") ?> *</label>
+                    <input type="text" name="f_name" value="<?= htmlspecialchars($user["f_name"] ?? "") ?>" required>
+                </div>
+                <div class="form-group">
+                    <label><?= translate("Nachname") ?> *</label>
+                    <input type="text" name="l_name" value="<?= htmlspecialchars($user["l_name"] ?? "") ?>" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label><?= translate("Nachname") ?> *</label>
-                <input type="text" name="l_name" value="<?= htmlspecialchars($user["l_name"] ?? "") ?>" required>
-            </div>
-            <div class="form-group">
+
+            <div class="form-group" style="margin-top: 1rem;">
                 <label><?= translate("Kennwort") ?> <small>(<?= translate("Zum Ändern ausfüllen") ?>)</small></label>
                 <input type="password" name="password" placeholder="******">
             </div>
-        </section>
 
-        <section class="form-section">
-            <h2><?= translate("Geburtstag") ?></h2>
-            <div class="form-row">
+            <h3 style="margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem;">
+                <?= translate("Geburtstag") ?>
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
                 <input type="number" name="b_day" placeholder="TT" min="1" max="31" value="<?= $user["b_day"] ?: "" ?>">
                 <input type="number" name="b_month" placeholder="MM" min="1" max="12" value="<?= $user["b_month"] ?: "" ?>">
                 <input type="number" name="b_year" placeholder="JJJJ" min="1900" max="2100" value="<?= $user["b_year"] ?: "" ?>">
             </div>
-        </section>
 
-        <section class="form-section">
-            <h2><?= translate("Postadresse") ?></h2>
+            <h3 style="margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem;">
+                <?= translate("Postadresse") ?>
+            </h3>
             <div class="form-group">
-                <label><?= translate("Postadresse") ?></label>
-                <input type="text" name="p_address" value="<?= htmlspecialchars($user["p_address"] ?? "") ?>">
+                <input type="text" name="p_address" placeholder="<?= translate("Straße / Hausnummer") ?>" value="<?= htmlspecialchars($user["p_address"] ?? "") ?>">
             </div>
-            <div class="form-row">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; margin-top: 0.5rem;">
                 <input type="text" name="postcode" placeholder="PLZ" value="<?= htmlspecialchars($user["postcode"] ?? "") ?>">
                 <input type="text" name="suburb" placeholder="Ort" value="<?= htmlspecialchars($user["suburb"] ?? "") ?>">
             </div>
-            <div class="form-group">
-                <label><?= translate("Land") ?></label>
-                <input type="text" name="country" value="<?= htmlspecialchars($user["country"] ?? "") ?>">
-            </div>
-        </section>
 
-        <section class="form-section">
-            <h2><?= translate("Kontakt") ?></h2>
-            <div class="form-group">
-                <label><?= translate("Email") ?></label>
-                <input type="email" name="email" value="<?= htmlspecialchars($user["email"] ?? "") ?>">
+            <h3 style="margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem;">
+                <?= translate("Kontakt") ?>
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label><?= translate("Email") ?></label>
+                    <input type="email" name="email" value="<?= htmlspecialchars($user["email"] ?? "") ?>">
+                </div>
+                <div class="form-group">
+                    <label><?= translate("Telefon") ?></label>
+                    <input type="text" name="phone" value="<?= htmlspecialchars($user["phone"] ?? "") ?>">
+                </div>
             </div>
-            <div class="form-group">
-                <label><?= translate("Telefon") ?></label>
-                <input type="text" name="phone" value="<?= htmlspecialchars($user["phone"] ?? "") ?>">
-            </div>
-        </section>
 
-        <section class="form-section">
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" name="s_details" <?= ($user["s_details"] ?? 1) ? "checked" : "" ?>>
-                    <?= translate("Zeige Details") ?> (<?= translate("allow_others_view") ?>)
-                </label>
+            <div class="form-group" style="margin-top: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="s_details" value="1" <?= ($user["s_details"] ?? 1) ? "checked" : "" ?> style="width: auto;">
+                <label style="margin: 0;"><?= translate("Zeige Details für andere") ?></label>
             </div>
-        </section>
 
-        <div class="footer_1_pce">
-            <button type="submit" name="submit" class="button"><?= translate("Aktualisieren") ?></button>
-        </div>
-    </form>
-</div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="submit" name="submit" class="button" style="flex: 2;"><?= translate("Aktualisieren") ?></button>
+                <button type="submit" name="back" class="button button-secondary" style="flex: 1;"><?= translate("Abbrechen") ?></button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?></div>
+</footer>
 
 </body>
 </html>

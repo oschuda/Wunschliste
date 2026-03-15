@@ -312,168 +312,153 @@ $wishes = $stmt->fetchAll();
 </head>
 <body>
 
-<table class="main_table">
-    <tr>
-        <td width="5%"></td>
-        <td width="90%"></td>
-        <td width="5%"></td>
-    </tr>
-    <tr height="100%">
-        <td></td>
-        <td valign="center" align="center">
-            <table cellspacing="0" cellpadding="5" class="main_box">
-                <tr height="20">
-                    <td class="heading_left">
-                        <p><b><?= gettext("Administratorbereich") ?></b></p>
-                    </td>
-                    <td class="heading_right">
-                        <form method="post" action="">
-                            <input type="submit" class="button" name="logout" value="<?= gettext("Abmelden") ?>" style="background: var(--color-accent-secondary);">
-                            <input type="submit" class="button" name="back" value="<?= gettext("Zurück >>") ?>">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                        </form>
-                    </td>
-                </tr>
+<header class="main-header">
+    <div class="header-content">
+        <div class="header-left">
+            <h1><?= gettext("Administratorbereich") ?></h1>
+        </div>
+        <nav class="header-right header-actions">
+            <form method="post" action="" style="display:flex; gap:10px;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                <button type="submit" name="back" class="button"><?= gettext("Zurück") ?></button>
+                <button type="submit" name="logout" class="button button-danger"><?= gettext("Abmelden") ?></button>
+            </form>
+        </nav>
+    </div>
+</header>
 
-                <?php if ($messages): ?>
-                        <tr>
-                            <td colspan="2" style="padding:10px; background:#e8f5e9; border:1px solid #4caf50; color:#006400;">
-                                <?= implode('<br>', array_map('htmlspecialchars', $messages)) ?>
-                            </td>
-                        </tr>
+<main class="container">
+    <?php if ($messages): ?>
+        <div style="padding:10px; background: rgba(39, 174, 96, 0.1); border: 1px solid var(--success-color); color: var(--success-color); border-radius: 8px; margin-bottom: 20px;">
+            <?= implode('<br>', array_map('htmlspecialchars', $messages)) ?>
+        </div>
+    <?php endif; ?>
+
+    <section class="card">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <h2><?= gettext("Benutzerverwaltung") ?></h2>
+            <form method="get" action="" style="display: flex; gap: 5px;">
+                <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="<?= gettext("Suche...") ?>" style="width: 200px;">
+                <button type="submit" class="button"><?= gettext("Suchen") ?></button>
+                <?php if ($search): ?>
+                    <a href="<?= $_SERVER['PHP_SELF'] ?>" class="button button-secondary"><?= gettext("Reset") ?></a>
+                <?php endif; ?>
+            </form>
+        </div>
+
+        <form method="post" action="">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+            
+            <div class="list-table admin-users-table">
+                <div class="list-header">
+                    <div><button type="submit" name="l_name" style="color:white; background:none; border:none; font-weight:bold; cursor:pointer; padding:0;"><?= gettext("Nachname") ?></button></div>
+                    <div><button type="submit" name="f_name" style="color:white; background:none; border:none; font-weight:bold; cursor:pointer; padding:0;"><?= gettext("Vorname") ?></button></div>
+                    <div><button type="submit" name="u_name" style="color:white; background:none; border:none; font-weight:bold; cursor:pointer; padding:0;"><?= gettext("Benutzer") ?></button></div>
+                    <div><button type="submit" name="b_date" style="color:white; background:none; border:none; font-weight:bold; cursor:pointer; padding:0;"><?= gettext("Geburtstag") ?></button></div>
+                    <div><?= gettext("Rolle") ?></div>
+                    <div><?= gettext("Aktiv") ?></div>
+                    <div style="text-align: center;">#</div>
+                </div>
+
+                <?php foreach ($users as $user): ?>
+                    <?php
+                    $enabledText = $user['enabled'] ? gettext("Ja") : gettext("Nein");
+                    $roleText = match($user['role']) {
+                        'admin' => gettext("Admin"),
+                        'moderator' => gettext("Moderator"),
+                        default => gettext("Benutzer")
+                    };
+                    $birthdate = ($user['b_day'] && $user['b_month'] && $user['b_year']) 
+                        ? sprintf("%02d/%02d/%d", $user['b_day'], $user['b_month'], $user['b_year']) 
+                        : '-';
+                    ?>
+                    <div class="list-row alternating-row">
+                        <div><?= htmlspecialchars($user['l_name'] ?? '') ?></div>
+                        <div><?= htmlspecialchars($user['f_name'] ?? '') ?></div>
+                        <div><?= htmlspecialchars($user['u_name'] ?? '') ?></div>
+                        <div><?= htmlspecialchars($birthdate) ?></div>
+                        <div><?= $roleText ?></div>
+                        <div style="color: <?= $user['enabled'] ? 'var(--success-color)' : 'var(--accent-color)' ?>;"><?= $enabledText ?></div>
+                        <div style="text-align: center;"><input type="checkbox" name="u_selected[]" value="<?= (int)$user['id'] ?>"></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?php if ($totalPages > 1): ?>
+                <div style="text-align: center; margin: 20px 0; display: flex; justify-content: center; gap: 10px; align-items: center;">
+                    <?php
+                    parse_str($_SERVER['QUERY_STRING'], $p_params);
+                    unset($p_params['page']);
+                    $baseQuery = http_build_query($p_params);
+                    $sep = $baseQuery ? '&' : '?';
+                    ?>
+                    <?php if ($page > 1): ?>
+                        <a href="<?= $_SERVER['PHP_SELF'] . '?' . $baseQuery . $sep ?>page=<?= $page - 1 ?>" class="button button-secondary">←</a>
                     <?php endif; ?>
+                    <span><?= $page ?> / <?= $totalPages ?></span>
+                    <?php if ($page < $totalPages): ?>
+                        <a href="<?= $_SERVER['PHP_SELF'] . '?' . $baseQuery . $sep ?>page=<?= $page + 1 ?>" class="button button-secondary">→</a>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
-                    <tr height="100%">
-                        <td colspan="2" valign="top" align="left" style="border-left: 1px solid; border-right: 1px solid;">
-                            <div style="margin-bottom: 10px;">
-                                <form method="get" action="" style="display: inline-block;">
-                                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="<?= gettext("Suche nach Name oder Benutzername") ?>" style="width: 200px;">
-                                    <input type="submit" class="button" value="<?= gettext("Suchen") ?>">
-                                    <?php if ($search): ?>
-                                        <a href="<?= $_SERVER['PHP_SELF'] ?>" class="button"><?= gettext("Suche zurücksetzen") ?></a>
-                                    <?php endif; ?>
-                                </form>
-                            </div>
-                            <form method="post" action="">
-                                <table cellspacing="1" cellpadding="2" class="main_list">
-                                    <tr class="header_row">
-                                        <td><input type="submit" class="button" name="l_name"  value="<?= gettext("Nachname") ?>"></td>
-                                        <td><input type="submit" class="button" name="f_name"  value="<?= gettext("Vorname") ?>"></td>
-                                        <td><input type="submit" class="button" name="u_name"  value="<?= gettext("Benutzer") ?>"></td>
-                                        <td><input type="submit" class="button" name="b_date"  value="<?= gettext("Geburtstag") ?>"></td>
-                                        <td width="10%"><b><?= gettext("Rolle") ?></b></td>
-                                        <td width="10%"><b><?= gettext("Aktiviert") ?></b></td>
-                                        <td align="center" width="10%"><b><?= gettext("Auswählen") ?></b></td>
-                                    </tr>
+            <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <button type="submit" class="button" name="tog_enable"><?= gettext("An/Aus") ?></button>
+                
+                <div style="display: flex; gap: 5px; align-items: center; border-left: 1px solid var(--border-color); padding-left: 10px;">
+                    <select name="new_role" style="width: auto;">
+                        <option value="user"><?= gettext("Benutzer") ?></option>
+                        <option value="moderator"><?= gettext("Moderator") ?></option>
+                        <option value="admin"><?= gettext("Admin") ?></option>
+                    </select>
+                    <button type="submit" class="button" name="change_role"><?= gettext("Rolle") ?></button>
+                </div>
 
-                                    <?php foreach ($users as $user): ?>
-                                        <?php
-                                        $enabledText = $user['enabled'] ? gettext("Ja") : gettext("Nein");
-                                        $roleText = match($user['role']) {
-                                            'admin' => gettext("Admin"),
-                                            'moderator' => gettext("Moderator"),
-                                            default => gettext("Benutzer")
-                                        };
-                                        $birthdate = '';
-                                        if ($user['b_day'] && $user['b_month'] && $user['b_year']) {
-                                            $birthdate = sprintf("%02d/%02d/%d", $user['b_day'], $user['b_month'], $user['b_year']);
-                                        }
-                                        ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($user['l_name'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars($user['f_name'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars($user['u_name'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars($birthdate) ?></td>
-                                            <td><?= $roleText ?></td>
-                                            <td><?= $enabledText ?></td>
-                                            <td align="center">
-                                                <input type="checkbox" name="u_selected[]" value="<?= (int)$user['id'] ?>">
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </table>
+                <div style="display: flex; gap: 5px; align-items: center; border-left: 1px solid var(--border-color); padding-left: 10px;">
+                    <input type="text" name="new_password" placeholder="<?= gettext("Neues PW") ?>" style="width: 120px;">
+                    <button type="submit" class="button" name="change_password"><?= gettext("PW ändern") ?></button>
+                </div>
 
-                                <?php if ($totalPages > 1): ?>
-                                <div style="text-align: center; margin: 10px 0;">
-                                    <?php
-                                    $baseUrl = $_SERVER['PHP_SELF'];
-                                    $queryString = $_SERVER['QUERY_STRING'];
-                                    parse_str($queryString, $p_params);
-                                    unset($p_params['page']);
-                                    $baseQuery = http_build_query($p_params);
-                                    $separator = $baseQuery ? '&' : '?';
-                                    ?>
-                                    <?php if ($page > 1): ?>
-                                        <a href="<?= $baseUrl . $baseQuery . $separator ?>page=<?= $page - 1 ?>" class="button">← <?= gettext("Zurück") ?></a>
-                                    <?php endif; ?>
-                                    Seite <?= $page ?> von <?= $totalPages ?>
-                                    <?php if ($page < $totalPages): ?>
-                                        <a href="<?= $baseUrl . $baseQuery . $separator ?>page=<?= $page + 1 ?>" class="button"><?= gettext("Weiter") ?> →</a>
-                                    <?php endif; ?>
-                                </div>
-                                <?php endif; ?>
+                <button type="submit" class="button button-danger" name="remove" onclick="return confirm('<?= gettext("Wirklich löschen?") ?>')" style="margin-left: auto;"><?= gettext("Löschen") ?></button>
+            </div>
+        </form>
+    </section>
 
-                                <div class="footer_1_pce" style="padding: 10px 0;">
-                                    <input type="submit" class="button" name="tog_enable" value="<?= gettext("Aktivieren/Blockieren") ?>">
-                                    <span style="margin: 0 10px; border-left: 1px solid #ccc; padding-left: 10px;">
-                                        <select name="new_role">
-                                            <option value="user"><?= gettext("Benutzer") ?></option>
-                                            <option value="moderator"><?= gettext("Moderator") ?></option>
-                                            <option value="admin"><?= gettext("Admin") ?></option>
-                                        </select>
-                                        <input type="submit" class="button" name="change_role" value="<?= gettext("Rolle ändern") ?>">
-                                    </span>
-                                    <span style="margin: 0 10px; border-left: 1px solid #ccc; padding-left: 10px;">
-                                        <input type="text" name="new_password" placeholder="<?= gettext("Neues Passwort") ?>" style="width: 120px;">
-                                        <input type="submit" class="button" name="change_password" value="<?= gettext("Passwort ändern") ?>">
-                                    </span>
-                                    <input type="submit" class="button" name="remove" value="<?= gettext("Löschen") ?>" onclick="return confirm('<?= gettext("Wirklich löschen?") ?>')" style="margin-left: 10px;">
-                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                                </div>
-                            </form>
-                        </td>
-                    </tr>
+    <section class="card">
+        <h2 style="margin-bottom: 20px;"><?= gettext("Wunschverwaltung") ?></h2>
+        <form method="post" action="">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+            <div class="list-table admin-wishes-table">
+                <div class="list-header">
+                    <div><?= gettext("Titel") ?></div>
+                    <div><?= gettext("Besitzer") ?></div>
+                    <div><?= gettext("Reserviert von") ?></div>
+                    <div style="text-align: center;">#</div>
+                </div>
 
-                    <tr height="20">
-                        <td colspan="2" class="heading_left">
-                            <p><b><?= gettext("Wunschverwaltung") ?></b></p>
-                        </td>
-                    </tr>
+                <?php foreach ($wishes as $wish): ?>
+                    <div class="list-row alternating-row">
+                        <div><?= htmlspecialchars($wish['title'] ?? '') ?></div>
+                        <div><?= htmlspecialchars($wish['owner_name'] ?? '') ?></div>
+                        <div style="color: <?= $wish['claimed'] ? 'var(--accent-color)' : 'var(--text-muted)' ?>;">
+                            <?= htmlspecialchars($wish['claimed_name'] ?? gettext("Frei")) ?>
+                        </div>
+                        <div style="text-align: center;"><input type="checkbox" name="w_selected[]" value="<?= (int)$wish['id'] ?>"></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
-                    <tr height="100%">
-                        <td colspan="2" valign="top" align="left" style="border-left: 1px solid; border-right: 1px solid;">
-                            <form method="post" action="">
-                                <table cellspacing="1" cellpadding="2" class="main_list">
-                                    <tr class="header_row">
-                                        <td><b><?= gettext("Titel") ?></b></td>
-                                        <td><b><?= gettext("Besitzer") ?></b></td>
-                                        <td><b><?= gettext("Reserviert von") ?></b></td>
-                                        <td align="center" width="10%"><b><?= gettext("Auswählen") ?></b></td>
-                                    </tr>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="button" name="unclaim"><?= gettext("Freigeben") ?></button>
+                <button type="submit" class="button button-danger" name="delete_wish" onclick="return confirm('<?= gettext("Wirklich löschen?") ?>')" style="margin-left: auto;"><?= gettext("Löschen") ?></button>
+            </div>
+        </form>
+    </section>
+</main>
 
-                                    <?php foreach ($wishes as $wish): ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($wish['title'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars($wish['owner_name'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars($wish['claimed_name'] ?? gettext("Frei")) ?></td>
-                                            <td align="center">
-                                                <input type="checkbox" name="w_selected[]" value="<?= (int)$wish['id'] ?>">
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </table>
-                                <div class="footer_1_pce" style="padding: 10px 0;">
-                                    <input type="submit" class="button" name="unclaim" value="<?= gettext("Freigeben") ?>">
-                                    <input type="submit" class="button" name="delete_wish" value="<?= gettext("Löschen") ?>" onclick="return confirm('<?= gettext("Wirklich löschen?") ?>')">
-                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                                </div>
-                            </form>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?> - Admin Mode</div>
+</footer>
 
 </body>
 </html>

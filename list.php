@@ -124,189 +124,166 @@ $claimedWishes = $claimedWishesStmt->fetchAll();
     <title><?= gettext("Wunschliste & Reservierungen") ?></title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<body>
+<body class="is-centered">
 
-<table class="main_table">
-    <tr>
-        <td width="3%"></td>
-        <td width="94%"></td>
-        <td width="3%"></td>
-    </tr>
-    <tr height="100%">
-        <td></td>
-        <td valign="center" align="center">
-            <table cellspacing="0" cellpadding="5" class="main_box" style="width: 100%; max-width: 1100px;">
-                <form method="post" action="">
-                    <tr>
-                        <td class="heading_left">
-                            <?= gettext("Wunschliste & Reservierungen") ?><br><br>
-                        </td>
-                        <td class="heading_right">
-                            <a href="settings.php" class="button" style="margin-right: 10px;"><?= gettext("Einstellungen") ?></a>
-                            <button type="submit" name="back" class="button" style="cursor: pointer;"><?= gettext("Zurück") ?> >></button>
-                        </td>
-                    </tr>
+<header class="main-header">
+    <div class="header-content">
+        <h1><?= gettext("Wunschliste & Reservierungen") ?></h1>
+        <div class="header-actions">
+            <a href="settings.php" class="button"><?= gettext("Einstellungen") ?></a>
+            <form method="post" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                <button type="submit" name="back" class="button"><?= gettext("Zurück") ?> >></button>
+            </form>
+        </div>
+    </div>
+</header>
 
-                    <?php if (!empty($error)): ?>
-                        <tr>
-                            <td colspan="2" style="color:#c00; font-weight:bold; padding:10px; background:#ffebee;">
-                                <?= htmlspecialchars($error) ?>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
+<main class="container">
+    <section class="card full-width">
+        <form method="post" action="">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
 
-                    <?php if (!empty($messages)): ?>
-                        <tr>
-                            <td colspan="2" style="color:#006400; font-weight:bold; padding:10px; background:#e8f5e9;">
-                                <?= implode('<br>', array_map('htmlspecialchars', $messages)) ?>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
+            <?php if (!empty($error)): ?>
+                <div class="status-message error">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-                    <!-- Meine Wünsche -->
-                    <tr>
-                        <td colspan="2" align="center" style="border-right:1px solid; border-left:1px solid; padding-top: 20px;">
-                            <b style="font-size: 1.2em;"><?= gettext("Meine Wünsche") ?></b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" valign="top" style="border-right:1px solid; border-left:1px solid; padding: 10px;">
-                            <table cellspacing="0" cellpadding="8" class="main_list" width="100%" style="border-collapse: collapse;">
-                                <tr style="background-color: var(--color-bg-alt); color: var(--color-text);">
-                                    <th width="3%" align="left">#</th>
-                                    <th width="25%" align="left"><?= gettext("Wunsch") ?></th>
-                                    <th width="10%" align="right"><?= gettext("Preis") ?></th>
-                                    <th align="left"><?= gettext("Notizen") ?></th>
-                                    <th width="8%" align="center">QR</th>
-                                    <th width="8%" align="center"><?= gettext("Auswählen") ?></th>
-                                </tr>
+            <?php if (!empty($messages)): ?>
+                <div class="status-message success">
+                    <?= implode('<br>', array_map('htmlspecialchars', $messages)) ?>
+                </div>
+            <?php endif; ?>
 
-                                <?php if (empty($ownWishes)): ?>
-                                    <tr><td colspan="6" align="center" style="padding: 20px;"><?= gettext("Noch keine Wünsche vorhanden.") ?></td></tr>
-                                <?php else: ?>
-                                    <?php $x = 1; foreach ($ownWishes as $wish): ?>
-                                        <tr class="alternating-row">
-                                            <td valign="top"><?= $x++ ?></td>
-                                            <td valign="top">
-                                                <div style="font-weight: bold; margin-bottom: 5px;">
-                                                    <?php if (!empty($wish['url'])): ?>
-                                                        <a href="<?= htmlspecialchars($wish['url'] ?: '') ?>" target="_blank" style="color: #64B5F6;">
-                                                            <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <small><a href="edit-wish.php?editID=<?= (int)$wish['id'] ?>" style="color: #81C784;">[<?= gettext("bearbeiten") ?>]</a></small>
-                                            </td>
-                                            <td valign="top" align="right" style="white-space: nowrap;">
-                                                <?= $wish['price'] ? number_format((float)$wish['price'], 2, ',', '.') . ' €' : '-' ?>
-                                            </td>
-                                            <td valign="top" style="font-size: 0.95em;">
-                                                <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
-                                            </td>
-                                            <td align="center" valign="middle">
-                                                <?php if (!empty($wish['url'])): ?>
-                                                    <?= getQRCodeHtml($wish['url'], $currentUserId) ?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td align="center" valign="middle">
-                                                <input type="checkbox" name="w_selected[]" value="<?= (int)$wish['id'] ?>" style="transform: scale(1.5);">
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+            <!-- Meine Wünsche -->
+            <div class="section-header">
+                <h2><?= gettext("Meine Wünsche") ?></h2>
+            </div>
+
+            <div class="list-table own-wishes-table">
+                <div class="list-header">
+                    <div class="col-id">#</div>
+                    <div class="col-title"><?= gettext("Wunsch") ?></div>
+                    <div class="col-price"><?= gettext("Preis") ?></div>
+                    <div class="col-notes"><?= gettext("Notizen") ?></div>
+                    <div class="col-qr">QR</div>
+                    <div class="col-select"><?= gettext("Auswählen") ?></div>
+                </div>
+
+                <?php if (empty($ownWishes)): ?>
+                    <div class="list-row empty">
+                        <div class="col-full"><?= gettext("Noch keine Wünsche vorhanden.") ?></div>
+                    </div>
+                <?php else: ?>
+                    <?php $x = 1; foreach ($ownWishes as $wish): ?>
+                        <div class="list-row alternating-row">
+                            <div class="col-id"><?= $x++ ?></div>
+                            <div class="col-title">
+                                <div class="item-title">
+                                    <?php if (!empty($wish['url'])): ?>
+                                        <a href="<?= htmlspecialchars($wish['url'] ?: '') ?>" target="_blank" class="link-external">
+                                            <?= htmlspecialchars($wish['title'] ?: '') ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <?= htmlspecialchars($wish['title'] ?: '') ?>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="edit-wish.php?editID=<?= (int)$wish['id'] ?>" class="link-edit">[<?= gettext("bearbeiten") ?>]</a>
+                                </div>
+                            </div>
+                            <div class="col-price">
+                                <?= $wish['price'] ? number_format((float)$wish['price'], 2, ',', '.') . ' €' : '-' ?>
+                            </div>
+                            <div class="col-notes">
+                                <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
+                            </div>
+                            <div class="col-qr">
+                                <?php if (!empty($wish['url'])): ?>
+                                    <?= getQRCodeHtml($wish['url'], $currentUserId) ?>
                                 <?php endif; ?>
-                            </table>
-                            <div style="text-align: right; padding: 10px;">
-                                <input type="submit" class="button" name="add_wish" value="+ <?= gettext("Wunsch hinzufügen") ?>">
-                                <input type="submit" class="button" name="del_wish" value="X <?= gettext("Markierte löschen") ?>" onclick="return confirm('Wünsche wirklich löschen?');">
                             </div>
-                        </td>
-                    </tr>
-
-                    <!-- Reservierte Wünsche -->
-                    <tr>
-                        <td colspan="2" align="center" style="border-right:1px solid; border-left:1px solid; padding-top: 30px;">
-                            <b style="font-size: 1.2em;"><?= gettext("Reservierte Wünsche") ?></b>
-                            <div style="margin-top: 5px;">
-                                <a href="reserved.php" target="_blank" style="font-size: 0.85em; color: #bbb;">[<?= gettext("Druckerfreundlich") ?>]</a>
+                            <div class="col-select">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" name="w_selected[]" value="<?= (int)$wish['id'] ?>">
+                                    <span class="checkmark"></span>
+                                </label>
                             </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" valign="top" style="border-right:1px solid; border-left:1px solid; padding: 10px;">
-                            <table cellspacing="0" cellpadding="8" class="main_list" width="100%" style="border-collapse: collapse;">
-                                <tr style="background-color: var(--color-bg-alt); color: var(--color-text);">
-                                    <th width="3%" align="left">#</th>
-                                    <th width="15%" align="left"><?= gettext("Besitzer") ?></th>
-                                    <th width="20%" align="left"><?= gettext("Wunsch") ?></th>
-                                    <th width="10%" align="right"><?= gettext("Preis") ?></th>
-                                    <th align="left"><?= gettext("Notizen") ?></th>
-                                    <th width="8%" align="center">QR</th>
-                                    <th width="8%" align="center"><?= gettext("Auswählen") ?></th>
-                                </tr>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
 
-                                <?php if (empty($claimedWishes)): ?>
-                                    <tr><td colspan="7" align="center" style="padding: 20px;"><?= gettext("Du hast noch keine Wünsche reserviert.") ?></td></tr>
+            <div class="button-group align-right">
+                <button type="submit" class="button button-success" name="add_wish">+ <?= gettext("Wunsch hinzufügen") ?></button>
+                <button type="submit" class="button button-danger" name="del_wish" onclick="return confirm('Wünsche wirklich löschen?');">X <?= gettext("Markierte löschen") ?></button>
+            </div>
+
+            <!-- Reservierte Wünsche -->
+            <div class="section-header mt-30">
+                <h2><?= gettext("Reservierte Wünsche") ?></h2>
+                <a href="reserved.php" target="_blank" class="link-secondary">[<?= gettext("Druckerfreundlich") ?>]</a>
+            </div>
+
+            <div class="list-table claimed-wishes-table">
+                <div class="list-header">
+                    <div class="col-id">#</div>
+                    <div class="col-owner"><?= gettext("Besitzer") ?></div>
+                    <div class="col-title"><?= gettext("Wunsch") ?></div>
+                    <div class="col-price"><?= gettext("Preis") ?></div>
+                    <div class="col-notes"><?= gettext("Notizen") ?></div>
+                    <div class="col-qr">QR</div>
+                    <div class="col-select"><?= gettext("Auswählen") ?></div>
+                </div>
+
+                <?php if (empty($claimedWishes)): ?>
+                    <div class="list-row empty">
+                        <div class="col-full"><?= gettext("Du hast noch keine Wünsche reserviert.") ?></div>
+                    </div>
+                <?php else: ?>
+                    <?php $x = 1; foreach ($claimedWishes as $wish): ?>
+                        <div class="list-row alternating-row">
+                            <div class="col-id"><?= $x++ ?></div>
+                            <div class="col-owner"><?= htmlspecialchars($wish['owner_name'] ?? gettext('Unbekannt')) ?></div>
+                            <div class="col-title">
+                                <?php if (!empty($wish['url'])): ?>
+                                    <a href="<?= htmlspecialchars($wish['url'] ?: '') ?>" target="_blank" class="link-external">
+                                        <?= htmlspecialchars($wish['title'] ?: '') ?>
+                                    </a>
                                 <?php else: ?>
-                                    <?php $x = 1; foreach ($claimedWishes as $wish): ?>
-                                        <tr class="alternating-row">
-                                            <td valign="top"><?= $x++ ?></td>
-                                            <td valign="top" style="font-weight: bold;"><?= htmlspecialchars($wish['owner_name'] ?? gettext('Unbekannt')) ?></td>
-                                            <td valign="top">
-                                                <?php if (!empty($wish['url'])): ?>
-                                                    <a href="<?= htmlspecialchars($wish['url'] ?: '') ?>" target="_blank" style="color: #64B5F6;">
-                                                        <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <?= htmlspecialchars($wish['title'] ?: '') ?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td valign="top" align="right" style="white-space: nowrap;">
-                                                <?= $wish['price'] ? number_format((float)$wish['price'], 2, ',', '.') . ' €' : '-' ?>
-                                            </td>
-                                            <td valign="top" style="font-size: 0.95em;">
-                                                <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
-                                            </td>
-                                            <td align="center" valign="middle">
-                                                <?php if (!empty($wish['url'])): ?>
-                                                    <?= getQRCodeHtml($wish['url'], $currentUserId) ?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td align="center" valign="middle">
-                                                <input type="checkbox" name="d_selected[]" value="<?= (int)$wish['id'] ?>" style="transform: scale(1.5);">
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                                    <?= htmlspecialchars($wish['title'] ?: '') ?>
                                 <?php endif; ?>
-                            </table>
-                            <div style="text-align: right; padding: 10px;">
-                                <input type="submit" class="button" name="rel_claimed" value="↶ <?= gettext("Reservierung stornieren") ?>" onclick="return confirm('<?= gettext("Sicher, dass Du diese Reservierung(en) stornieren willst?") ?>');">
                             </div>
-                        </td>
-                    </tr>
+                            <div class="col-price">
+                                <?= $wish['price'] ? number_format((float)$wish['price'], 2, ',', '.') . ' €' : '-' ?>
+                            </div>
+                            <div class="col-notes">
+                                <?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?>
+                            </div>
+                            <div class="col-qr">
+                                <?php if (!empty($wish['url'])): ?>
+                                    <?= getQRCodeHtml($wish['url'], $currentUserId) ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-select">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" name="d_selected[]" value="<?= (int)$wish['id'] ?>">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
 
-                    <tr>
-                        <td colspan="2" class="footer_1_pce">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                        </td>
-                    </tr>
-                </form>
-            </table>
-        </td>
-        <td></td>
-    </tr>
-    <tr height="40">
-        <td colspan="3"></td>
-    </tr>
-</table>
+            <div class="button-group align-right">
+                <button type="submit" class="button button-warning" name="rel_claimed" onclick="return confirm('<?= gettext("Sicher, dass Du diese Reservierung(en) stornieren willst?") ?>');">↶ <?= gettext("Reservierung stornieren") ?></button>
+            </div>
+        </form>
+    </section>
+</main>
 
 </body>
 </html>
-<?php exit; // Ende des modernisierten Layouts ?>
-        </td>
-    </tr>
-</table>
-
-</body>
-</html>
+<?php exit; ?>

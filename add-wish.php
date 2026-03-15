@@ -23,8 +23,8 @@ require_once 'inc/i18n.php';  // Enthält Database::get() etc.
 
 $errors   = [];
 $formData = [
-    'desc'  => '',
-    'link'  => '',
+    'title' => '',
+    'url'   => '',
     'price' => '',
     'notes' => '',
 ];
@@ -42,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = translate('Sicherheitsfehler: Bitte Seite neu laden und erneut versuchen.');
     } else {
         // 3. Daten einlesen
-        $desc  = trim($_POST['desc']  ?? '');
-        $link  = trim($_POST['link']  ?? '');
+        $title = trim($_POST['title'] ?? '');
+        $url   = trim($_POST['url']   ?? '');
         $price = trim($_POST['price'] ?? '');
         $notes = trim($_POST['notes'] ?? '');
 
@@ -52,15 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $priceFloat = (!empty($cleanPrice)) ? (float)$cleanPrice : null;
 
         $formData = [
-            'desc'  => $desc,
-            'link'  => $link,
+            'title' => $title,
+            'url'   => $url,
             'price' => $price,
             'notes' => $notes,
         ];
 
         // 4. Pflichtfeld-Check (Nur wenn wir speichern wollen)
         if (isset($_POST['add_wish'])) {
-            if (empty($desc)) {
+            if (empty($title)) {
                 $errors[] = translate('Bitte eine Beschreibung/Wunsch eingeben (Pflichtfeld).');
             }
 
@@ -69,8 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $pdo = Database::get();
                     
                     // URL-Anpassung
-                    if (!empty($link) && !preg_match('#^https?://#i', $link)) {
-                        $link = 'https://' . $link;
+                    if (!empty($url) && !preg_match('#^https?://#i', $url)) {
+                        $url = 'https://' . $url;
                     }
 
                     $stmt = $pdo->prepare("
@@ -81,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $stmt->execute([
                         $currentUserId,
-                        $desc,
-                        $link ?: null,
+                        $title,
+                        $url ?: null,
                         $priceFloat,
                         $notes ?: null
                     ]);
@@ -109,76 +109,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<table class="main_table">
-    <tr>
-        <td width="35%"></td>
-        <td width="30%"></td>
-        <td width="35%"></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td align="center" valign="center">
-            <table cellpadding="5" cellspacing="0" class="main_list">
-                <!-- Formular beginnt hier, um ALLES einzuschließen -->
-                <form method="post" action="add-wish.php">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
-                    
-                    <tr>
-                        <td class="heading_left">
-                            <?= translate("Wunsch hinzufügen") ?><br><br>
-                        </td>
-                        <td class="heading_right">
-                            <button type="submit" name="back" class="button" style="cursor: pointer; padding: 5px 15px;"><?= translate("Zurück") ?> >></button>
-                        </td>
-                    </tr>
+<header class="main-header">
+    <div class="header-left">
+        <h1><?= translate("Wunsch hinzufügen") ?></h1>
+    </div>
+    <nav class="header-right">
+        <form method="post" action="add-wish.php" style="display:inline;">
+             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
+             <button type="submit" name="back" class="button"><?= translate("Zurück") ?></button>
+        </form>
+    </nav>
+</header>
 
-                    <?php if ($errors): ?>
-                        <tr>
-                            <td colspan="2" style="color:#c00; font-weight:bold; padding:10px; background:#ffebee; border:1px solid #c00;">
-                                <?= implode('<br>', array_map('htmlspecialchars', $errors)) ?>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
+<main class="container">
+    <section class="card">
+        <form method="post" action="add-wish.php">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
+            
+            <?php if ($errors): ?>
+                <div style="color: #e74c3c; font-weight: bold; padding: 1rem; background: rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <?= implode('<br>', array_map('htmlspecialchars', $errors)) ?>
+                </div>
+            <?php endif; ?>
 
-                    <tr align="center">
-                        <td colspan="2" style="border-right:1px solid; border-left:1px solid; padding: 20px;">
-                            <div style="margin-bottom: 20px; text-align: left;">
-                                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #ffffff;"><?= translate("Wunsch / Beschreibung") ?> *</label>
-                                <input name="desc" type="text" style="width: 100%; box-sizing: border-box; padding: 8px;" value="<?= htmlspecialchars($formData['desc']) ?>" required placeholder="<?= translate("Was wünschst Du Dir?") ?>">
-                            </div>
+            <div class="form-group">
+                <label for="title"><?= translate("Wunsch / Beschreibung") ?> *</label>
+                <input name="title" id="title" type="text" value="<?= htmlspecialchars($formData['title']) ?>" required placeholder="<?= translate("Was wünschst Du Dir?") ?>">
+            </div>
 
-                            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                                <div style="flex: 1.5; text-align: left;">
-                                    <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #ffffff; white-space: nowrap;"><?= translate("Link / Verknüpfung") ?></label>
-                                    <input name="link" type="text" style="width: 100%; box-sizing: border-box; padding: 8px;" value="<?= htmlspecialchars($formData['link']) ?>" placeholder="https://...">
-                                </div>
-                                <div style="flex: 1; text-align: left;">
-                                    <label style="display: block; font-weight: bold; margin-bottom: 5px; white-space: nowrap; color: #ffffff;"><?= translate("Unverbindlicher Preis") ?></label>
-                                    <input name="price" type="text" style="width: 100%; box-sizing: border-box; padding: 8px;" value="<?= htmlspecialchars($formData['price']) ?>" placeholder="0,00 €">
-                                </div>
-                            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="url"><?= translate("Link / Verknüpfung") ?></label>
+                    <input name="url" id="url" type="text" value="<?= htmlspecialchars($formData['url']) ?>" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="price"><?= translate("Preis (ca.)") ?></label>
+                    <input name="price" id="price" type="text" value="<?= htmlspecialchars($formData['price']) ?>" placeholder="0,00 €">
+                </div>
+            </div>
 
-                            <div style="text-align: left;">
-                                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #ffffff;"><?= translate("Notizen / Details") ?></label>
-                                <textarea name="notes" rows="4" style="width: 100%; box-sizing: border-box; padding: 8px;" placeholder="<?= translate("Größe, Farbe, Shop-Details...") ?>"><?= htmlspecialchars($formData['notes']) ?></textarea>
-                            </div>
-                        </td>
-                    </tr>
+            <div class="form-group">
+                <label for="notes"><?= translate("Notizen / Details") ?></label>
+                <textarea name="notes" id="notes" rows="4" placeholder="<?= translate("Größe, Farbe, Shop-Details...") ?>"><?= htmlspecialchars($formData['notes']) ?></textarea>
+            </div>
 
-                    <tr>
-                        <td colspan="2" class="footer_1_pce">
-                            <button type="submit" name="add_wish" value="1" class="button" style="cursor: pointer; padding: 10px 20px; font-weight: bold;">
-                                <?= translate("übernehmen") ?>
-                            </button>
-                            <input type="reset" class="button" value="<?= translate("Löschen") ?>" style="padding: 10px 20px;">
-                        </td>
-                    </tr>
-                </form>
-            </table>
-        </td>
-        <td></td>
-    </tr>
-</table>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" name="add_wish" value="1" class="button" style="flex: 2;">
+                    <?= translate("übernehmen") ?>
+                </button>
+                <button type="reset" class="button button-secondary" style="flex: 1;">
+                    <?= translate("Abbrechen") ?>
+                </button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?></div>
+</footer>
 
 </body>
 </html>

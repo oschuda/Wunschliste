@@ -158,9 +158,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<div class="main-container">
-
-    <div style="text-align: right; margin-bottom: 10px;">
+<header class="main-header">
+    <div class="header-left">
+        <h1><?= translate('register') ?></h1>
+    </div>
+    <nav class="header-right">
         <form method="POST" style="display:inline;">
             <button type="submit" name="set_lang" value="de" style="background:none; border:none; cursor:pointer; padding:0; filter: <?= ($_SESSION['lang'] ?? 'de') === 'de' ? 'none' : 'grayscale(100%) opacity(0.5)' ?>;">
                 <img src="images/de.gif" alt="Deutsch" title="Deutsch" style="width:24px; vertical-align:middle;">
@@ -168,151 +170,127 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" name="set_lang" value="en" style="background:none; border:none; cursor:pointer; padding:0; filter: <?= ($_SESSION['lang'] ?? 'de') === 'en' ? 'none' : 'grayscale(100%) opacity(0.5)' ?>;">
                 <img src="images/en.gif" alt="English" title="English" style="width:24px; vertical-align:middle;">
             </button>
+            <button type="submit" name="back" class="button button-secondary" formnovalidate style="margin-left: 10px;">
+                <?= translate('back') ?>
+            </button>
         </form>
-    </div>
+    </nav>
+</header>
 
-    <form method="POST" action="signup.php">
-        <table class="main_list" cellpadding="5" cellspacing="0">
-            <tr>
-                <td class="heading_left">
-                    <?= translate('register') ?>
-                </td>
-                <td class="heading_right">
-                    <button type="submit" name="back" class="button" formnovalidate>
-                        <?= translate('back') ?> »
-                    </button>
-                </td>
-            </tr>
+<main class="container">
+    <?php if (!empty($errors)): ?>
+        <div style="color: #e74c3c; font-weight: bold; padding: 1rem; background: rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; border-radius: 8px; margin-bottom: 1.5rem;">
+            <?= implode('<br>', array_map('htmlspecialchars', $errors)) ?>
+        </div>
+    <?php endif; ?>
 
-            <?php if (!empty($errors)): ?>
-                <tr>
-                    <td colspan="2" class="error-box">
-                        <?= implode('<br>', array_map('htmlspecialchars', $errors)) ?>
-                    </td>
-                </tr>
-            <?php endif; ?>
+    <?php if (!empty($success)): ?>
+        <div style="padding:10px; background: rgba(39, 174, 96, 0.1); border: 1px solid var(--success-color); color: var(--success-color); border-radius: 8px; margin-bottom: 20px;">
+            <?= htmlspecialchars($success) ?>
+            <br><br>
+            <a href="login.php" class="button"><?= translate('login') ?></a>
+        </div>
+    <?php endif; ?>
 
-            <?php if (!empty($success)): ?>
-                <tr>
-                    <td colspan="2" class="success-box">
-                        <?= htmlspecialchars($success) ?>
-                    </td>
-                </tr>
-            <?php endif; ?>
+    <?php if (empty($success)): ?>
+    <section class="card">
+        <form method="POST" action="signup.php">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
 
-            <tr>
-                <td class="label"><?= translate('first_name') ?>:</td>
-                <td>
-                    <input type="text" name="f_name" size="30" value="<?= htmlspecialchars($formData['f_name'] ?? '') ?>" required>
-                    <span class="required">*</span>
-                </td>
-            </tr>
-            <tr>
-                <td class="label"><?= translate('last_name') ?>:</td>
-                <td>
-                    <input type="text" name="l_name" size="30" value="<?= htmlspecialchars($formData['l_name'] ?? '') ?>" required>
-                    <span class="required">*</span>
-                </td>
-            </tr>
-            <tr>
-                <td class="label"><?= translate('username') ?>:</td>
-                <td>
-                    <input type="text" name="u_name" size="30" value="<?= htmlspecialchars($formData['u_name'] ?? '') ?>" required>
-                    <span class="required">*</span>
-                </td>
-            </tr>
-            <tr>
-                <td class="label"><?= translate('password') ?>:</td>
-                <td>
-                    <input type="password" name="p_word" size="30" required>
-                    <span class="required">*</span>
-                </td>
-            </tr>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label><?= translate('first_name') ?> *</label>
+                    <input type="text" name="f_name" value="<?= htmlspecialchars($formData['f_name'] ?? '') ?>" required>
+                </div>
+                <div class="form-group">
+                    <label><?= translate('last_name') ?> *</label>
+                    <input type="text" name="l_name" value="<?= htmlspecialchars($formData['l_name'] ?? '') ?>" required>
+                </div>
+            </div>
 
-            <!-- Geburtstag -->
-            <tr>
-                <td class="label"><?= translate('birthday') ?>:</td>
-                <td>
-                    <select name="b_day">
-                        <option value="0">-- <?= translate('day') ?> --</option>
-                        <?php for ($x = 1; $x <= 31; $x++): ?>
-                            <option value="<?= $x ?>" <?= ($formData['b_day'] ?? 0) == $x ? 'selected' : '' ?>><?= $x ?></option>
-                        <?php endfor; ?>
-                    </select>
-                    <select name="b_month">
-                        <option value="0">-- <?= translate('month') ?> --</option>
-                        <?php
-                        $months = [
-                            1 => translate('january'), 2 => translate('february'), 3 => translate('march'),
-                            4 => translate('april'), 5 => translate('may'), 6 => translate('june'),
-                            7 => translate('july'), 8 => translate('august'), 9 => translate('september'),
-                            10 => translate('october'), 11 => translate('november'), 12 => translate('december')
-                        ];
-                        foreach ($months as $num => $name):
-                        ?>
-                            <option value="<?= $num ?>" <?= ($formData['b_month'] ?? 0) == $num ? 'selected' : '' ?>><?= $name ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <select name="b_year">
-                        <option value="0">-- <?= translate('year') ?> --</option>
-                        <?php for ($x = date('Y'); $x >= 1920; $x--): ?>
-                            <option value="<?= $x ?>" <?= ($formData['b_year'] ?? 0) == $x ? 'selected' : '' ?>><?= $x ?></option>
-                        <?php endfor; ?>
-                    </select>
-                </td>
-            </tr>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+                <div class="form-group">
+                    <label><?= translate('username') ?> *</label>
+                    <input type="text" name="u_name" value="<?= htmlspecialchars($formData['u_name'] ?? '') ?>" required>
+                </div>
+                <div class="form-group">
+                    <label><?= translate('password') ?> *</label>
+                    <input type="password" name="p_word" required>
+                </div>
+            </div>
 
-            <!-- Adresse & Kontakt -->
-            <tr>
-                <td class="label"><?= translate('address') ?>:</td>
-                <td>
-                    <input type="text" name="p_address" size="30" value="<?= htmlspecialchars($formData['p_address'] ?? '') ?>" placeholder="Strasse"><br>
-                    <input type="text" name="postcode" size="5" value="<?= htmlspecialchars($formData['postcode'] ?? '') ?>" placeholder="PLZ">
-                    <input type="text" name="suburb" size="15" value="<?= htmlspecialchars($formData['suburb'] ?? '') ?>" placeholder="Ort">
-                    <input type="text" name="state" size="7" value="<?= htmlspecialchars($formData['state'] ?? '') ?>" placeholder="Bundesland">
-                </td>
-            </tr>
-            <tr>
-                <td class="label"><?= translate('country') ?>:</td>
-                <td>
-                    <input type="text" name="country" size="30" value="<?= htmlspecialchars($formData['country'] ?? '') ?>">
-                </td>
-            </tr>
-            <tr>
-                <td class="label"><?= translate('email') ?>:</td>
-                <td>
-                    <input type="email" name="email" size="30" value="<?= htmlspecialchars($formData['email'] ?? '') ?>">
-                </td>
-            </tr>
-            <tr>
-                <td class="label"><?= translate('phone') ?>:</td>
-                <td>
-                    <input type="tel" name="phone" size="30" value="<?= htmlspecialchars($formData['phone'] ?? '') ?>">
-                </td>
-            </tr>
+            <h3 style="margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem;">
+                <?= translate('birthday') ?>
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 2fr 1.5fr; gap: 1rem;">
+                <select name="b_day">
+                    <option value="0"><?= translate('day') ?></option>
+                    <?php for ($x = 1; $x <= 31; $x++): ?>
+                        <option value="<?= $x ?>" <?= ($formData['b_day'] ?? 0) == $x ? 'selected' : '' ?>><?= $x ?></option>
+                    <?php endfor; ?>
+                </select>
+                <select name="b_month">
+                    <option value="0"><?= translate('month') ?></option>
+                    <?php
+                    $months = [
+                        1 => translate('january'), 2 => translate('february'), 3 => translate('march'),
+                        4 => translate('april'), 5 => translate('may'), 6 => translate('june'),
+                        7 => translate('july'), 8 => translate('august'), 9 => translate('september'),
+                        10 => translate('october'), 11 => translate('november'), 12 => translate('december')
+                    ];
+                    foreach ($months as $num => $name):
+                    ?>
+                        <option value="<?= $num ?>" <?= ($formData['b_month'] ?? 0) == $num ? 'selected' : '' ?>><?= $name ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select name="b_year">
+                    <option value="0"><?= translate('year') ?></option>
+                    <?php for ($x = date('Y'); $x >= 1920; $x--): ?>
+                        <option value="<?= $x ?>" <?= ($formData['b_year'] ?? 0) == $x ? 'selected' : '' ?>><?= $x ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
 
-            <tr>
-                <td class="label"><?= translate('show_details') ?>:</td>
-                <td>
-                    <input type="checkbox" name="s_details" <?= !empty($formData['s_details']) ? 'checked' : '' ?>>
-                    <small>(<?= translate('allow_others_view') ?>)</small>
-                </td>
-            </tr>
+            <h3 style="margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem;">
+                <?= translate('address') ?>
+            </h3>
+            <div class="form-group">
+                <input type="text" name="p_address" value="<?= htmlspecialchars($formData['p_address'] ?? '') ?>" placeholder="<?= translate('Straße / Hausnummer') ?>">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+                <input type="text" name="postcode" placeholder="PLZ" value="<?= htmlspecialchars($formData['postcode'] ?? '') ?>">
+                <input type="text" name="suburb" placeholder="Ort" value="<?= htmlspecialchars($formData['suburb'] ?? '') ?>">
+                <input type="text" name="state" placeholder="B-Land" value="<?= htmlspecialchars($formData['state'] ?? '') ?>">
+            </div>
+            <div class="form-group" style="margin-top: 0.5rem;">
+                <input type="text" name="country" placeholder="<?= translate('country') ?>" value="<?= htmlspecialchars($formData['country'] ?? '') ?>">
+            </div>
 
-            <tr>
-                <td colspan="2" class="footer_1_pce">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                    <button type="submit" class="button" name="register_submit">
-                        <?= translate('register') ?>
-                    </button>
-                    <button type="reset" class="button">
-                        <?= translate('reset') ?>
-                    </button>
-                </td>
-            </tr>
-        </table>
-    </form>
-</div>
+            <h3 style="margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem;">
+                <?= translate('Kontakt') ?>
+            </h3>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem;">
+                <input type="email" name="email" placeholder="<?= translate('email') ?>" value="<?= htmlspecialchars($formData['email'] ?? '') ?>">
+                <input type="tel" name="phone" placeholder="<?= translate('phone') ?>" value="<?= htmlspecialchars($formData['phone'] ?? '') ?>">
+            </div>
+
+            <div class="form-group" style="margin-top: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="s_details" value="1" <?= ($formData['s_details'] ?? 1) ? "checked" : "" ?> style="width: auto;">
+                <label style="margin: 0;"><?= translate('show_details') ?> (<?= translate('allow_others_view') ?>)</label>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="submit" name="register_submit" class="button" style="flex: 2;"><?= translate('register') ?></button>
+                <button type="reset" class="button button-secondary" style="flex: 1;"><?= translate('reset') ?></button>
+            </div>
+        </form>
+    </section>
+    <?php endif; ?>
+</main>
+
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?></div>
+</footer>
 
 </body>
 </html>

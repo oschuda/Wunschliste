@@ -121,9 +121,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 </head>
 <body>
 
-<main style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+<main class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
     <div class="card" style="width: 100%; max-width: 400px; padding: var(--spacing-lg);">
-        <header style="background: none; border: none; padding: 0; margin-bottom: var(--spacing-md); justify-content: center;">
+        <header class="main-header" style="background: none; border: none; padding: 0; margin-bottom: var(--spacing-md); justify-content: center;">
             <h1 style="font-size: 1.5rem; text-align: center; color: var(--primary-color);"><?= translate('wishlist') ?></h1>
         </header>
 
@@ -145,15 +145,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
             
-            <button type="submit" name="login" class="btn" style="width: 100%; margin-top: var(--spacing-sm);"><?= translate('login') ?></button>
+            <button type="submit" name="login" class="button" style="width: 100%; margin-top: var(--spacing-sm);"><?= translate('login') ?></button>
         </form>
 
         <hr style="margin: var(--spacing-md) 0; border: 0; border-top: 1px solid var(--border-color);">
 
         <div style="display: flex; justify-content: center; gap: var(--spacing-md);">
             <form method="POST" style="flex-direction: row; gap: var(--spacing-sm);">
-                <button type="submit" name="set_lang" value="de" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">DE</button>
-                <button type="submit" name="set_lang" value="en" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">EN</button>
+                <button type="submit" name="set_lang" value="de" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">DE</button>
+                <button type="submit" name="set_lang" value="en" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">EN</button>
             </form>
         </div>
     </div>

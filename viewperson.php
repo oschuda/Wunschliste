@@ -93,88 +93,93 @@ if (empty($fullName)) $fullName = $userToView['u_name'];
 </head>
 <body>
 
-<table class="main_table">
-    <tr>
-        <td valign="center" align="center">
-            <table cellspacing="0" cellpadding="5" class="main_box">
-                <tr height="20">
-                    <td class="heading_left">
-                        <b><?= gettext("Wünsche von") ?> <?= htmlspecialchars($fullName) ?></b>
-                    </td>
-                    <td class="heading_right">
-                        <a href="index.php" class="button"><?= gettext("Zurück") ?></a>
-                    </td>
-                </tr>
+<header class="main-header">
+    <div class="header-left">
+        <h1><?= translate("Wünsche von") ?> <?= htmlspecialchars($fullName) ?></h1>
+    </div>
+    <nav class="header-right">
+        <a href="index.php" class="button"><?= translate("Zurück") ?></a>
+    </nav>
+</header>
 
-                <?php if ($messages): ?>
-                    <tr>
-                        <td colspan="2" style="background:#e8f5e9; padding:10px; border:1px solid #4caf50; color:green;">
-                            <?= implode('<br>', $messages) ?>
-                        </td>
-                    </tr>
-                <?php endif; ?>
+<main class="container">
+    <?php if ($messages): ?>
+        <div style="padding:10px; background: rgba(39, 174, 96, 0.1); border: 1px solid var(--success-color); color: var(--success-color); border-radius: 8px; margin-bottom: 20px;">
+            <?= implode('<br>', array_map('htmlspecialchars', $messages)) ?>
+        </div>
+    <?php endif; ?>
 
-                <tr>
-                    <td colspan="2" style="border-left:1px solid; border-right:1px solid; padding:0;">
-                        <form method="post" action="">
-                            <input type="hidden" name="csrf_token" value="<?= get_csrf_token() ?>">
-                            <table width="100%" cellspacing="1" cellpadding="2" class="main_list">
-                                <tr class="header_row">
-                                    <td width="30%"><b><?= gettext("Wunsch") ?></b></td>
-                                    <td width="10%"><b><?= gettext("Preis") ?></b></td>
-                                    <td width="35%"><b><?= gettext("Notizen") ?></b></td>
-                                    <td width="15%"><b><?= gettext("Status") ?></b></td>
-                                    <td align="center" width="10%"><b><?= gettext("Wählen") ?></b></td>
-                                </tr>
+    <section class="card">
+        <form method="post" action="">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
+            
+            <div class="list-table">
+                <div class="list-row list-header" style="grid-template-columns: 2fr 0.8fr 2fr 1.2fr 0.5fr;">
+                    <div><?= translate("Wunsch") ?></div>
+                    <div><?= translate("Preis") ?></div>
+                    <div><?= translate("Notizen") ?></div>
+                    <div><?= translate("Status") ?></div>
+                    <div style="text-align: center;">#</div>
+                </div>
 
-                                <?php foreach ($wishes as $wish): ?>
-                                    <?php 
-                                    $claimantId = !empty($wish['claimed']) ? (int)$wish['claimed'] : 0;
-                                    $isClaimed = ($claimantId > 0);
-                                    $isByMe = ($claimantId === $currentUserId);
-                                    $rowBg = $isClaimed ? ($isByMe ? 'var(--color-bg-accent, #e8f4f8)' : 'var(--color-bg-alt, #ecf0f1)') : 'var(--color-bg, #ffffff)';
-                                    ?>
-                                    <tr style="background: <?= $rowBg ?>; color: var(--color-text);">
-                                        <td style="padding: 10px;">
-                                            <?php if (!empty($wish['url'])): ?>
-                                                <a href="<?= htmlspecialchars($wish['url']) ?>" target="_blank" style="color: var(--color-link);"><?= htmlspecialchars($wish['title']) ?></a>
-                                            <?php else: ?>
-                                                <?= htmlspecialchars($wish['title']) ?>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td style="padding: 10px;"><?= number_format((float)($wish['price'] ?? 0), 2, ',', '.') ?> €</td>
-                                        <td style="padding: 10px;"><?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?></td>
-                                        <td style="padding: 10px;">
-                                            <?php if (!$isClaimed): ?>
-                                                <span style="color: var(--color-success, green); font-weight: bold;"><?= gettext("Verfügbar") ?></span>
-                                            <?php elseif ($isByMe): ?>
-                                                <span style="color: var(--color-info, blue); font-weight: bold;"><?= gettext("Von dir reserviert") ?></span>
-                                            <?php else: ?>
-                                                <span style="color: var(--color-error, red);"><?= gettext("Bereits reserviert") ?></span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td align="center" style="padding: 10px;">
-                                            <?php if (!$isClaimed): ?>
-                                                <input type="checkbox" name="claim_items[]" value="<?= (int)$wish['id'] ?>">
-                                            <?php elseif ($isByMe): ?>
-                                                <input type="checkbox" name="unclaim_items[]" value="<?= (int)$wish['id'] ?>">
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </table>
+                <?php foreach ($wishes as $wish): ?>
+                    <?php 
+                    $claimantId = !empty($wish['claimed']) ? (int)$wish['claimed'] : 0;
+                    $isClaimed = ($claimantId > 0);
+                    $isByMe = ($claimantId === $currentUserId);
+                    
+                    // Status styling
+                    $statusText = translate("Verfügbar");
+                    $statusColor = "var(--success-color)";
+                    if ($isClaimed) {
+                        if ($isByMe) {
+                            $statusText = translate("Von dir reserviert");
+                            $statusColor = "var(--primary-color)";
+                        } else {
+                            $statusText = translate("Bereits reserviert");
+                            $statusColor = "var(--accent-color)";
+                        }
+                    }
+                    ?>
+                    <div class="list-row" style="grid-template-columns: 2fr 0.8fr 2fr 1.2fr 0.5fr;">
+                        <div>
+                            <?php if (!empty($wish['url'])): ?>
+                                <a href="<?= htmlspecialchars($wish['url']) ?>" target="_blank"><?= htmlspecialchars($wish['title']) ?></a>
+                            <?php else: ?>
+                                <?= htmlspecialchars($wish['title']) ?>
+                            <?php endif; ?>
+                        </div>
+                        <div><?= number_format((float)($wish['price'] ?? 0), 2, ',', '.') ?> €</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);"><?= nl2br(htmlspecialchars($wish['notes'] ?? '')) ?></div>
+                        <div style="color: <?= $statusColor ?>; font-weight: bold; font-size: 0.85rem;">
+                            <?= $statusText ?>
+                        </div>
+                        <div style="text-align: center;">
+                            <?php if (!$isClaimed): ?>
+                                <input type="checkbox" name="claim_items[]" value="<?= (int)$wish['id'] ?>">
+                            <?php elseif ($isByMe): ?>
+                                <input type="checkbox" name="unclaim_items[]" value="<?= (int)$wish['id'] ?>">
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
-                            <div style="padding: 15px; text-align: right; border-top: 1px solid var(--color-border); background: var(--color-bg-light);">
-                                <input type="submit" name="do_claim" class="button" value="<?= gettext("Markierte Wünsche reservieren") ?>" style="background: var(--color-success); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                                <input type="submit" name="do_unclaim" class="button" value="<?= gettext("Reservierung stornieren") ?>" style="background: var(--color-error); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px;">
-                            </div>
-                        </form>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
+                <button type="submit" name="do_unclaim" class="button button-danger">
+                    <?= translate("Reservierung stornieren") ?>
+                </button>
+                <button type="submit" name="do_claim" class="button">
+                    <?= translate("Markierte Wünsche reservieren") ?>
+                </button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?></div>
+</footer>
 
 </body>
 </html>

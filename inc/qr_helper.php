@@ -40,10 +40,19 @@ function getCachedQRCode($data, $params = []) {
     $cacheKey = md5($data . serialize($params));
     $cacheFile = $qr_cache_dir . $cacheKey . ".png";
     if (($params["cache_enabled"] ?? true) && file_exists($cacheFile)) return "data:image/png;base64," . base64_encode(file_get_contents($cacheFile));
+    
+    // Check for GD library
+    if (!function_exists("imagecreate")) {
+        return ""; // Silently fail if GD is missing to prevent Fatal Error
+    }
+
     try {
         QRcode::png($data, $cacheFile, QR_ECLEVEL_M, $params["qr_size"] ?? 3, 2);
-        return "data:image/png;base64," . base64_encode(file_get_contents($cacheFile));
+        if (file_exists($cacheFile)) {
+            return "data:image/png;base64," . base64_encode(file_get_contents($cacheFile));
+        }
     } catch (Exception $e) { return ""; }
+    return "";
 }
 }
 if (!function_exists("getQRCodeHtml")) {

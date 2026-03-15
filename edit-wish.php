@@ -26,7 +26,7 @@ $formData = ["title" => $wish["title"] ?? "", "url" => $wish["url"] ?? "", "note
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST["back"])) { header("Location: list.php"); exit; }
     if (!isValidCsrf()) { $errors[] = "Sicherheitsfehler."; } else {
-        $title = trim($_POST["desc"] ?? ""); $url = trim($_POST["link"] ?? ""); $notes = trim($_POST["notes"] ?? ""); $price = (float)str_replace(",", ".", $_POST["price"] ?? "0");
+        $title = trim($_POST["title"] ?? ""); $url = trim($_POST["url"] ?? ""); $notes = trim($_POST["notes"] ?? ""); $price = (float)str_replace(",", ".", $_POST["price"] ?? "0");
         $formData = ["title" => $title, "url" => $url, "notes" => $notes, "price" => $price];
         if (empty($title)) { $errors[] = "Bitte Beschreibung eingeben."; }
         if (empty($errors)) {
@@ -39,16 +39,75 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Wunsch bearbeiten</title><link rel="stylesheet" href="style.css"></head><body>
-<div class="box" style="max-width:500px; margin: 40px auto; padding: 20px;">
-   <h2>Wunsch bearbeiten</h2>
-   <form method="post">
-       <p>Beschreibung (Pflicht):<br><textarea name="desc" style="width:100%; height:80px;" required><?= htmlspecialchars($formData["title"]) ?></textarea></p>
-       <p>Preis (&euro;):<br><input name="price" type="text" value="<?= number_format($formData["price"], 2, ",", "") ?>"></p>
-       <p>Link (optional):<br><input name="link" type="url" style="width:100%;" value="<?= htmlspecialchars($formData["url"]) ?>"></p>
-       <p>Notizen:<br><textarea name="notes" style="width:100%; height:80px;"><?= htmlspecialchars($formData["notes"]) ?></textarea></p>
-       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-       <button type="submit" name="save_wish" class="btn">Speichern</button>
-       <button type="submit" name="back" class="btn secondary">Abbrechen</button>
-   </form>
-</div></body></html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= translate("Wunsch bearbeiten") ?> | <?= translate("Wunschliste") ?></title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<header class="main-header">
+    <div class="header-content">
+        <h1><?= translate("Wunsch bearbeiten") ?></h1>
+        <div class="header-actions">
+            <form method="post" style="display:inline;">
+                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                 <button type="submit" name="back" class="button"><?= translate("Zurück") ?></button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <section class="card">
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+            
+            <?php if ($errors): ?>
+                <div class="status-message error">
+                    <?= implode('<br>', array_map('htmlspecialchars', $errors)) ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="form-group">
+                <label for="title"><?= translate("Wunsch / Beschreibung") ?> *</label>
+                <input name="title" id="title" type="text" value="<?= htmlspecialchars($formData["title"]) ?>" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="url"><?= translate("Link / Verknüpfung") ?></label>
+                    <input name="url" id="url" type="text" value="<?= htmlspecialchars($formData["url"]) ?>" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="price"><?= translate("Preis (ca.)") ?></label>
+                    <input name="price" id="price" type="text" value="<?= number_format((float)$formData["price"], 2, ",", "") ?>" placeholder="0,00 €">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="notes"><?= translate("Notizen / Details") ?></label>
+                <textarea name="notes" id="notes" rows="4"><?= htmlspecialchars($formData["notes"]) ?></textarea>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" name="save_wish" value="1" class="button button-success" style="flex: 2;">
+                    <?= translate("Speichern") ?>
+                </button>
+                <button type="submit" name="back" class="button button-secondary" style="flex: 1;">
+                    <?= translate("Abbrechen") ?>
+                </button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="main-footer">
+    <div>&copy; <?= date("Y") ?> <?= translate("Wunschliste") ?></div>
+</footer>
+
+</body>
+</html>
