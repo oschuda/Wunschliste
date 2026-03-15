@@ -1,6 +1,6 @@
 <?php
 /**
- * QR-Code Hilfsfunktionen für phpWishlist
+ * QR-Code Hilfsfunktionen für Wunschliste
  * Verwendet phpqrcode Bibliothek mit Caching und anpassbaren Größen
  */
 

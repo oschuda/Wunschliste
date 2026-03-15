@@ -1,6 +1,6 @@
 <?php
 /**
- * Moderne PDO-Datenbankverbindung f�r phpWishlist (SQLite)
+ * Moderne PDO-Datenbankverbindung f�r Wunschliste (SQLite)
  * Original: class.db.inc.php ~2004 ? modernisiert 2026
  */
 

@@ -1,8 +1,8 @@
-﻿# QR-Code Funktionen in phpWishlist
+# QR-Code Funktionen in der Wunschliste
 
 ## Übersicht
 
-phpWishlist bietet einzigartige QR-Code-Funktionen für Wunschlisten, die es Benutzern ermöglichen, Links direkt mit dem Smartphone zu scannen.
+Die Wunschliste bietet einzigartige QR-Code-Funktionen für Wunschlisten, die es Benutzern ermöglichen, Links direkt mit dem Smartphone zu scannen.
 
 ## Features
 
@@ -75,7 +75,7 @@ chmod 755 data/qr_cache
 
 ## Alleinstellungsmerkmale
 
-Im Vergleich zu anderen Wunschlisten-Tools bietet phpWishlist:
+Im Vergleich zu anderen Wunschlisten-Tools bietet Wunschliste:
 
 - **Lokale Generierung**: Keine externen APIs oder Cloud-Dienste
 - **Datenschutz**: QR-Codes bleiben auf Ihrem Server

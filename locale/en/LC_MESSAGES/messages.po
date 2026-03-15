@@ -220,7 +220,7 @@ msgid "View Selected"
 msgstr ""
 
 #: login.php:84
-msgid "phpWishlist Login"
+msgid "Wunschliste Login"
 msgstr ""
 
 #: login.php:87 register.php:85 register.php:159

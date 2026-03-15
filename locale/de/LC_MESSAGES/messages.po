@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: phpwishlist 0.1.10\n"
+"Project-Id-Version: Wunschliste 0.1.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-11-13 20:37+0100\n"
 "PO-Revision-Date: 2004-11-13 20:15+1\n"
@@ -18,12 +18,12 @@ msgstr ""
 
 #: addwish.php:53 wishes.php:144
 msgid "Add Wish"
-msgstr "Wunsch hinzufügen"
+msgstr "Wunsch hinzufï¿½gen"
 
 #: addwish.php:54 details.php:94 editwish.php:55 register.php:86
 #: viewperson.php:61 wishes.php:71
 msgid "Back"
-msgstr "Zurück"
+msgstr "Zurï¿½ck"
 
 #: addwish.php:58 editwish.php:65
 msgid "Description"
@@ -82,7 +82,7 @@ msgstr "Passwort"
 
 #: details.php:109
 msgid "Complete to change"
-msgstr "Nur zum Ändern ausfüllen"
+msgstr "Nur zum ï¿½ndern ausfï¿½llen"
 
 #: details.php:113
 msgid "Birthday"
@@ -98,7 +98,7 @@ msgstr "Februar"
 
 #: details.php:125 register.php:117
 msgid "March"
-msgstr "März"
+msgstr "Mï¿½rz"
 
 #: details.php:126 register.php:118
 msgid "April"
@@ -162,7 +162,7 @@ msgstr "Anderen Benutzern"
 
 #: details.php:176
 msgid "Update"
-msgstr "Änderungen übernehmen"
+msgstr "ï¿½nderungen ï¿½bernehmen"
 
 #: editwish.php:54 wishes.php:145
 msgid "Edit Wish"
@@ -170,7 +170,7 @@ msgstr "Wunsch bearbeiten"
 
 #: editwish.php:75
 msgid "Save Changes"
-msgstr "Änderungen speichern"
+msgstr "ï¿½nderungen speichern"
 
 #: index.php:71
 msgid "Wishlists"
@@ -198,11 +198,11 @@ msgstr "Geburtsdatum"
 
 #: index.php:84
 msgid "Total Wishes"
-msgstr "Anzahl Wünsche"
+msgstr "Anzahl Wï¿½nsche"
 
 #: index.php:85 wishes.php:107
 msgid "Claimed Wishes"
-msgstr "Übernommene Wünsche"
+msgstr "ï¿½bernommene Wï¿½nsche"
 
 #: index.php:86 viewperson.php:125 wishes.php:83 wishes.php:117
 msgid "Select"
@@ -210,7 +210,7 @@ msgstr "Auswahl"
 
 #: index.php:110
 msgid "Edit Wishes/Claims"
-msgstr "Wünsche / Übernahmen bearbeiten"
+msgstr "Wï¿½nsche / ï¿½bernahmen bearbeiten"
 
 #: index.php:111
 msgid "Edit My Details"
@@ -221,7 +221,7 @@ msgid "View Selected"
 msgstr "Selektierte anzeigen"
 
 #: login.php:84
-msgid "phpWishlist Login"
+msgid "Wunschliste Login"
 msgstr ""
 
 #: login.php:87 register.php:85 register.php:159
@@ -247,23 +247,23 @@ msgstr "Adresse"
 #: viewperson.php:147
 #, fuzzy
 msgid "Claimed"
-msgstr "Übernommen"
+msgstr "ï¿½bernommen"
 
 #: viewperson.php:160
 msgid "No wishes"
-msgstr "Keine Wünsche"
+msgstr "Keine Wï¿½nsche"
 
 #: viewperson.php:167
 msgid "Claim"
-msgstr "Übernehmen"
+msgstr "ï¿½bernehmen"
 
 #: wishes.php:70
 msgid "Wishlist & Claims"
-msgstr "Wunschzettel und Übernommene Wünsche"
+msgstr "Wunschzettel und ï¿½bernommene Wï¿½nsche"
 
 #: wishes.php:74
 msgid "My Wishes"
-msgstr "Meine Wünsche"
+msgstr "Meine Wï¿½nsche"
 
 #: wishes.php:107
 msgid "[Printer Friendly]"
@@ -271,8 +271,8 @@ msgstr "[Druckversion]"
 
 #: wishes.php:146
 msgid "Delete Wish"
-msgstr "Wunsch löschen"
+msgstr "Wunsch lï¿½schen"
 
 #: wishes.php:149
 msgid "Release Claimed"
-msgstr "Übernahme zurücknehmen"
+msgstr "ï¿½bernahme zurï¿½cknehmen"
