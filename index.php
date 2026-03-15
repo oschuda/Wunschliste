@@ -123,96 +123,69 @@ unset($user); // Referenz auflösen
 ?>
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="<?= $language ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wunschliste - Übersicht</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<table class="main_table">
-    <tr>
-        <td width="5%"></td>
-        <td width="90%"></td>
-        <td width="5%"></td>
-    </tr>
-    <tr height="100%">
-        <td></td>
-        <td valign="center" align="center">
-            <table cellspacing="0" cellpadding="5" class="main_box">
-                <form method="post" action="">
-                    <tr height="20">
-                        <td class="heading_left">
-                            <?= gettext("Wunschlisten") ?><br>
-                            [<?= gettext("Angemeldet als") ?> <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>]
-                        </td>
-                        <td class="heading_right">
-                            <input type="submit" class="button" name="lang_de" value="Deutsch">
-                            <input type="submit" class="button" name="lang_en" value="English">
-                            <?php if (!empty($_SESSION['admin'])): ?>
-                                <a href="admin.php" class="button" style="background: var(--color-accent-secondary); color: white;">Admin</a>
-                            <?php endif; ?>
-                            <a href="tools.php" class="button" style="background: #4CAF50; color: white; text-decoration: none;">🚀 Shop-Addon</a>
-                            <input type="submit" class="button" name="logout" value="<?= gettext("Abmelden") ?>">
-                        </td>
-                    </tr>
+<header>
+    <div>
+        <h1><?= gettext("Wunschlisten") ?></h1>
+        <small><?= gettext("Angemeldet als") ?> <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></small>
+    </div>
+    <form method="post" style="flex-direction: row; align-items: center;">
+        <button type="submit" name="lang_de" class="btn btn-secondary">DE</button>
+        <button type="submit" name="lang_en" class="btn btn-secondary">EN</button>
+        <?php if (!empty($_SESSION['admin'])): ?>
+            <a href="admin.php" class="btn btn-danger">Admin</a>
+        <?php endif; ?>
+        <a href="tools.php" class="btn" style="background: var(--success-color);">🚀 Shop-Addon</a>
+        <button type="submit" name="logout" class="btn btn-secondary"><?= gettext("Abmelden") ?></button>
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+    </form>
+</header>
 
-                    <tr>
-                        <td valign="top" colspan="2" width="100%" style="border-left: 1px solid; border-right: 1px solid;">
-                            <table width="100%" cellspacing="1" cellpadding="2" align="center" class="main_list" border="0">
-                                <tr bgcolor="#EEEEEE">
-                                    <td align="left" width="11%">
-                                        <input type="submit" class="button" name="l_name" value="<?= gettext("Nachname") ?>">
-                                    </td>
-                                    <td align="left" width="11%">
-                                        <input type="submit" class="button" name="f_name" value="<?= gettext("Vorname") ?>">
-                                    </td>
-                                    <td align="right" width="11%">
-                                        <input type="submit" class="button" name="b_date" value="<?= gettext("Geburtstag") ?>">
-                                    </td>
-                                    <td align="right"><b><?= gettext("Wünsche gesamt") ?></b></td>
-                                    <td align="right" width="11%"><b><?= gettext("Reservierte Wünsche") ?></b></td>
-                                </tr>
+<main>
+    <section class="card">
+        <div class="list-table">
+            <header class="list-row list-header">
+                <div><?= gettext("Nachname") ?></div>
+                <div><?= gettext("Vorname") ?></div>
+                <div class="text-right"><?= gettext("Geburtstag") ?></div>
+                <div class="text-right"><?= gettext("Wünsche gesamt") ?></div>
+                <div class="text-right"><?= gettext("Reservierte Wünsche") ?></div>
+            </header>
 
-                                <?php foreach ($users as $user): ?>
-                                    <?php
-                                    $isOwn = ((int)$user['id'] === $currentUserId);
-                                    // Zeilenfarben (passend zu style.css Variablen)
-                                    $rowBg = $isOwn ? 'var(--color-bg-alt, #e8f4f8)' : 'var(--color-bg, #ffffff)'; 
-                                    $linkStart = '<a href="viewperson.php?viewID=' . (int)$user['id'] . '">';
-                                    $linkEnd   = '</a>';
-                                    ?>
-                                    <tr style="background-color: <?= $rowBg ?>; color: var(--color-text);">
-                                        <td><?= $linkStart . htmlspecialchars($user['l_name'] ?? '') . $linkEnd ?></td>
-                                        <td><?= $linkStart . htmlspecialchars($user['f_name'] ?? '') . $linkEnd ?></td>
-                                        <td align="right"><?= htmlspecialchars($user['birthdate'] ?? '') ?></td>
-                                        <td align="right"><?= (int)$user['total_wishes'] ?></td>
-                                        <td align="right" style="<?= $isOwn ? 'background-color: var(--color-bg-light, #cccccc); opacity: 0.5;' : '' ?>">
-                                            <?= $isOwn ? '—' : (int)$user['claimed_wishes'] ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </table>
-                        </td>
-                    </tr>
+            <?php foreach ($users as $user): ?>
+                <?php
+                $isOwn = ((int)$user['id'] === $currentUserId);
+                $link = 'viewperson.php?viewID=' . (int)$user['id'];
+                ?>
+                <div class="list-row" style="<?= $isOwn ? 'border: 2px solid var(--primary-color);' : '' ?>">
+                    <div><a href="<?= $link ?>"><?= htmlspecialchars($user['l_name'] ?? '') ?></a></div>
+                    <div><a href="<?= $link ?>"><?= htmlspecialchars($user['f_name'] ?? '') ?></a></div>
+                    <div class="text-right"><?= htmlspecialchars($user['birthdate'] ?? '') ?></div>
+                    <div class="text-right"><?= (int)$user['total_wishes'] ?></div>
+                    <div class="text-right">
+                        <?= $isOwn ? '—' : (int)$user['claimed_wishes'] ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+</main>
 
-                    <tr height="10" valign="bottom">
-                        <td class="footer_left">
-                            <input type="submit" class="button" name="edit_wishes" value="<?= gettext("Wünsche bearbeiten") ?>">
-                        </td>
-                        <td class="footer_right">
-                            <input type="submit" class="button" name="edit_details" value="<?= gettext("Details bearbeiten") ?>">
-                        </td>
-                    </tr>
-
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                </form>
-            </table>
-        </td>
-    </tr>
-</table>
+<footer>
+    <form method="post" style="flex-direction: row; width: 100%; justify-content: space-between;">
+        <button type="submit" name="edit_wishes" class="btn"><?= gettext("Wünsche bearbeiten") ?></button>
+        <button type="submit" name="edit_details" class="btn"><?= gettext("Details bearbeiten") ?></button>
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+    </form>
+</footer>
 
 </body>
 </html>

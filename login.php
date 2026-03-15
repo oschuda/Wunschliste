@@ -117,37 +117,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wunschliste - <?= translate('login_title') ?></title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px;">
+<body>
 
-<div style="width: 100%; max-width: 400px; text-align: right; margin-bottom: 10px;">
-    <form method="POST" style="display:inline;">
-        <button type="submit" name="set_lang" value="de" style="background:none; border:none; cursor:pointer; padding:0; filter: <?= ($_SESSION['lang'] ?? 'de') === 'de' ? 'none' : 'grayscale(100%) opacity(0.5)' ?>;">
-            <img src="images/de.gif" alt="Deutsch" title="Deutsch" style="width:24px; vertical-align:middle;">
-        </button>
-        <button type="submit" name="set_lang" value="en" style="background:none; border:none; cursor:pointer; padding:0; filter: <?= ($_SESSION['lang'] ?? 'de') === 'en' ? 'none' : 'grayscale(100%) opacity(0.5)' ?>;">
-            <img src="images/en.gif" alt="English" title="English" style="width:24px; vertical-align:middle;">
-        </button>
-    </form>
-</div>
+<main style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div class="card" style="width: 100%; max-width: 400px; padding: var(--spacing-lg);">
+        <header style="background: none; border: none; padding: 0; margin-bottom: var(--spacing-md); justify-content: center;">
+            <h1 style="font-size: 1.5rem; text-align: center; color: var(--primary-color);"><?= translate('wishlist') ?></h1>
+        </header>
 
-<table class="main_table" style="width: 100%; max-width: 400px;">
-    <form method="post" action="login.php" class="form">
-        <tr>
-            <td width="0%"></td>
-            <td width="100%"></td>
-            <td width="0%"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td height="40%" valign="middle" align="center">
-                <table border="0" width="100%" cellpadding="5" cellspacing="0" class="main_login">
-                    <tr>
-                        <td class="heading_left">
-                            <?= translate('wishlist') ?>
-                        </td>
-                        <td class="heading_right">
+        <?php if (!empty($errors)): ?>
+            <div style="background: var(--accent-color); color: white; padding: var(--spacing-sm); border-radius: var(--border-radius); margin-bottom: var(--spacing-md); font-size: 0.9rem;">
+                <?= implode('<br>', array_map('htmlspecialchars', $errors)) ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="post" action="login.php">
+            <div class="form-group">
+                <label for="username"><?= translate('Benutzer') ?></label>
+                <input type="text" name="username" id="username" required autofocus placeholder="<?= translate('Benutzer') ?>">
+            </div>
+            <div class="form-group">
+                <label for="password"><?= translate('Kennwort') ?></label>
+                <input type="password" name="password" id="password" required placeholder="******">
+            </div>
+            
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+            
+            <button type="submit" name="login" class="btn" style="width: 100%; margin-top: var(--spacing-sm);"><?= translate('login') ?></button>
+        </form>
+
+        <hr style="margin: var(--spacing-md) 0; border: 0; border-top: 1px solid var(--border-color);">
+
+        <div style="display: flex; justify-content: center; gap: var(--spacing-md);">
+            <form method="POST" style="flex-direction: row; gap: var(--spacing-sm);">
+                <button type="submit" name="set_lang" value="de" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">DE</button>
+                <button type="submit" name="set_lang" value="en" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">EN</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
                             <a href="./signup.php"><?= translate('register') ?></a>
                         </td>
                     </tr>
